@@ -1,3 +1,4 @@
+import IntroSequence from "./components/IntroSequence";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 import Thesis from "./components/Thesis";
@@ -12,6 +13,7 @@ import Footer from "./components/Footer";
 export default function Home() {
   return (
     <main style={{ background: "#09090a" }}>
+      <IntroSequence />
       <Nav />
       <Hero />
       <Thesis />

@@ -369,3 +369,114 @@ select:focus,
     transform: none;
   }
 }
+
+/* ---- Intro sequence (boot overlay + scrub-in-place hero video) ---- */
+.intro-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: #000;
+  clip-path: inset(0 0 0 0);
+}
+
+.intro-stage.is-revealing {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 950ms cubic-bezier(0.55, 0, 0.85, 0.36);
+}
+
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(1px);
+  transition: opacity 600ms var(--ease-in-out);
+  font-family: var(--font-martian);
+}
+
+.intro-lines {
+  position: absolute;
+  top: clamp(20px, 5vh, 44px);
+  left: clamp(16px, 4vw, 48px);
+}
+
+.intro-line {
+  margin: 0 0 7px;
+  font-size: clamp(10px, 0.9vw, 12px);
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 3px 6px;
+  width: fit-content;
+  animation: introLineIn 300ms var(--ease-out) both;
+}
+
+.intro-line.is-current {
+  background: #fff;
+  color: #000;
+}
+
+@keyframes introLineIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.intro-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.intro-counter {
+  font-size: clamp(22px, 2.6vw, 34px);
+  color: #fff;
+  letter-spacing: 0.06em;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.6);
+}
+
+.intro-enter {
+  font-family: var(--font-martian);
+  font-size: clamp(13px, 1.2vw, 16px);
+  letter-spacing: 0.35em;
+  text-indent: 0.35em;
+  background: #fff;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  padding: 12px clamp(36px, 7vw, 80px);
+  animation: introLineIn 400ms var(--ease-out) both;
+  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+}
+
+.intro-enter:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
+}
+
+.intro-status {
+  position: absolute;
+  right: clamp(16px, 4vw, 48px);
+  bottom: clamp(20px, 5vh, 40px);
+  margin: 0;
+  font-size: clamp(10px, 0.9vw, 12px);
+  letter-spacing: 0.1em;
+  color: #fff;
+  text-align: right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-overlay,
+  .intro-line,
+  .intro-enter,
+  .intro-stage.is-revealing {
+    animation: none;
+    transition: none;
+  }
+}
