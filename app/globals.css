@@ -1,0 +1,371 @@
+@import "tailwindcss";
+
+:root {
+  /* Neutrals */
+  --page: #09090a;
+  --black: #151515;
+  --white: #ffffff;
+  --off-white: #f2f0ec;
+  --off-white-2: #f1f4f6;
+  --light-green-text: #e6ffe7;
+
+  /* Grays */
+  --gray-9d: #9d9d9d;
+  --gray-9b: #9b9ba2;
+  --gray-59: #595959;
+  --gray-50: #505050;
+  --gray-40: #404040;
+  --gray-37: #373737;
+  --gray-25: #252525;
+
+  /* Greens */
+  --green: #24ad49;
+  --green-bright: #34c759;
+
+  /* Fonts */
+  --font-martian: "Martian Mono", ui-monospace, monospace;
+  --font-space: "Space Mono", ui-monospace, monospace;
+  --font-hanken: "Hanken Grotesk", system-ui, sans-serif;
+  --font-bricolage: "Bricolage Grotesque", system-ui, sans-serif;
+
+  /* Motion — strong custom curves (per Emil Kowalski) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background: var(--page);
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-hanken), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(52, 199, 89, 0.35);
+  color: #fff;
+}
+
+/* ----- Matrix rain background text ----- */
+.matrix-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.matrix-bg pre {
+  margin: 0;
+  font-family: var(--font-bricolage), monospace;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: 2px;
+  color: rgba(112, 229, 88, 0.12);
+  text-shadow: 0 0 6px rgba(112, 229, 88, 0.25);
+  white-space: pre-wrap;
+  word-break: break-all;
+  padding: 40px 32px;
+}
+
+/* ----- Green glow blobs ----- */
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ----- Big animated wordmark ----- */
+.wordmark {
+  font-family: var(--font-space), monospace;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+  color: #fff;
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.wordmark .letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.4em);
+  animation: letterIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.wordmark .underscore {
+  display: inline-block;
+  background: var(--green-bright);
+  align-self: flex-end;
+  opacity: 0;
+  animation: letterIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  box-shadow: 0 0 24px rgba(52, 199, 89, 0.6);
+}
+
+@keyframes letterIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.cursor-blink {
+  animation: blink 1.1s step-end infinite;
+}
+
+/* Input reset */
+input,
+select {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: var(--font-martian), monospace;
+}
+
+input::placeholder {
+  color: var(--gray-9d);
+}
+
+select {
+  appearance: none;
+}
+
+select option {
+  color: #151515;
+}
+
+/* Utility */
+.section-x {
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+/* =========================================================
+   MOTION — additive only. Every resting state below is the
+   same as the un-animated design; motion animates TO it.
+   ========================================================= */
+
+/* ---- Scroll reveal (single block) ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 560ms var(--ease-out),
+    transform 560ms var(--ease-out);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- Scroll reveal with staggered children ---- */
+.stagger > * {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 550ms var(--ease-out),
+    transform 550ms var(--ease-out);
+  will-change: opacity, transform;
+}
+.stagger.is-visible > * {
+  opacity: 1;
+  transform: none;
+}
+.stagger.is-visible > *:nth-child(1) { transition-delay: 0ms; }
+.stagger.is-visible > *:nth-child(2) { transition-delay: 60ms; }
+.stagger.is-visible > *:nth-child(3) { transition-delay: 120ms; }
+.stagger.is-visible > *:nth-child(4) { transition-delay: 180ms; }
+.stagger.is-visible > *:nth-child(5) { transition-delay: 240ms; }
+.stagger.is-visible > *:nth-child(6) { transition-delay: 300ms; }
+.stagger.is-visible > *:nth-child(7) { transition-delay: 360ms; }
+.stagger.is-visible > *:nth-child(8) { transition-delay: 420ms; }
+
+/* ---- Hero one-time load entrances ---- */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.load-fade-up {
+  opacity: 0;
+  animation: fadeUp 640ms var(--ease-out) forwards;
+}
+
+/* ---- Ambient glow drift (very slow, subtle) ---- */
+@keyframes glowDrift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -14px, 0) scale(1.06); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+.glow {
+  animation: glowDrift 12s ease-in-out infinite;
+}
+.glow:nth-child(2) {
+  animation-duration: 15s;
+  animation-delay: -4s;
+}
+.glow:nth-child(3) {
+  animation-duration: 18s;
+  animation-delay: -8s;
+}
+
+/* ---- Press feedback for any pressable ---- */
+.press {
+  transition: transform 150ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .press:active {
+    transform: scale(0.97);
+  }
+}
+
+/* ---- Hover effects (fine pointers only) ---- */
+@media (hover: hover) and (pointer: fine) {
+  /* Nav link animated underline */
+  .nav-link {
+    position: relative;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 1px;
+    background: var(--green-bright);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 220ms var(--ease-out);
+  }
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* Speaker photo zoom */
+  .speaker-photo {
+    transition: transform 500ms var(--ease-out);
+    will-change: transform;
+  }
+  .speaker-card:hover .speaker-photo {
+    transform: scale(1.045);
+  }
+
+  /* Who-it's-for cell: number glows on hover */
+  .who-cell .who-num {
+    transition:
+      text-shadow 240ms var(--ease-out),
+      color 240ms var(--ease-out);
+  }
+  .who-cell:hover .who-num {
+    text-shadow: 0 0 18px rgba(52, 199, 89, 0.65);
+  }
+
+  /* Agenda row: tag fills on hover (border follows currentColor → goes black) */
+  .agenda-tag {
+    transition:
+      background-color 360ms var(--ease-out),
+      color 360ms var(--ease-out),
+      border-color 360ms var(--ease-out);
+  }
+  .agenda-row:hover .agenda-tag {
+    background: #fff;
+    color: #151515;
+    transition-duration: 600ms;
+  }
+}
+
+/* Agenda tag resting color (kept in CSS, not inline, so the hover rule can win).
+   Border uses `1px solid` = currentColor, so it tracks the text color:
+   white at rest, black on hover. */
+.agenda-tag {
+  color: #fff;
+}
+
+/* Arrow button: nudge the arrow square on hover */
+.arrow-square {
+  transition: transform 200ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .arrow-btn:hover .arrow-square {
+    transform: translate(2px, -2px);
+  }
+}
+
+/* ---- Form inputs: underline animates to green on focus ---- */
+input,
+select,
+.field-underline {
+  transition: border-color 220ms var(--ease-out);
+}
+input:focus,
+select:focus,
+.field-underline:focus-within {
+  border-color: var(--green-bright) !important;
+}
+
+/* ---- Accessibility: honor reduced-motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: opacity 200ms ease !important;
+  }
+  .load-fade-up {
+    opacity: 1;
+    animation: none;
+  }
+  .glow {
+    animation: none;
+  }
+  .wordmark .letter,
+  .wordmark .underscore {
+    animation-duration: 1ms;
+  }
+  .cursor-blink {
+    animation: none;
+  }
+  .speaker-card:hover .speaker-photo,
+  .arrow-btn:hover .arrow-square {
+    transform: none;
+  }
+}
+
+/* ---- No-JS fallback: never leave revealed content hidden ---- */
+@media (scripting: none) {
+  .reveal,
+  .stagger > * {
+    opacity: 1;
+    transform: none;
+  }
+}
