@@ -1,59 +1,70 @@
-import { MatrixBackground, GlowBlobs, Wordmark } from "./shared";
+import { MatrixBackground, GlowBlobs, Wordmark, MARTIAN, HANKEN } from "./shared";
 import { Reveal, Stagger } from "./motion";
 
 const COLUMNS = [
-  { head: "Event", links: ["Thesis", "Who it's for", "Agenda", "Apply to attend"] },
-  { head: "Craft", links: ["Craft Ventures", "Portfolio", "Founder Stories"] },
-  { head: "Connect", links: ["LinkedIn", "X", "Get updates"] },
+  {
+    head: "Event",
+    links: [
+      { label: "Thesis", href: "#thesis" },
+      { label: "Who it's for", href: "#who" },
+      { label: "Agenda", href: "#agenda" },
+      { label: "Apply to attend", href: "#apply" },
+    ],
+  },
+  {
+    head: "Craft",
+    links: [
+      { label: "Craft Ventures", href: "#" },
+      { label: "Portfolio", href: "#" },
+      { label: "Founder Stories", href: "#" },
+    ],
+  },
+  {
+    head: "Connect",
+    links: [
+      { label: "LinkedIn", href: "#" },
+      { label: "X", href: "#" },
+      { label: "Get updates", href: "#" },
+    ],
+  },
 ];
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden" style={{ background: "#09090a", borderTop: "1px solid #505050" }}>
+    <footer className="relative overflow-hidden" style={{ background: "#000", borderTop: "1px solid var(--gray-50)" }}>
       <MatrixBackground />
       <GlowBlobs />
 
       <div
-        className="relative z-10 max-w-[1440px] mx-auto section-x"
-        style={{ paddingTop: 64, paddingBottom: 32, display: "flex", flexDirection: "column", gap: 64 }}
+        className="relative z-10 mx-auto section-x"
+        style={{ maxWidth: 1440, paddingTop: 64, paddingBottom: 32, display: "flex", flexDirection: "column", gap: 64 }}
       >
         {/* Top row */}
-        <Reveal className="flex flex-col lg:flex-row justify-between gap-16">
-          <div className="flex flex-col gap-5">
-            <p
-              className="uppercase"
-              style={{ fontFamily: "var(--font-martian)", fontSize: 14, color: "#34c759", lineHeight: "24px" }}
-            >
+        <Reveal className="flex flex-col lg:flex-row justify-between" style={{ gap: 64 }}>
+          <div className="flex flex-col" style={{ gap: 20 }}>
+            <p className="uppercase" style={{ fontFamily: MARTIAN, fontSize: 14, color: "#34c759", lineHeight: "24px", margin: 0 }}>
               Invite-Only Summit
             </p>
             <Wordmark size={54} />
-            <div className="flex items-center gap-2 uppercase mt-1">
-              <span style={{ fontFamily: "var(--font-martian)", fontSize: 14, color: "#9d9d9d", letterSpacing: "-0.03em" }}>
+            <div className="flex items-center uppercase" style={{ gap: 6 }}>
+              <span style={{ fontFamily: MARTIAN, fontWeight: 500, fontSize: 14.222, lineHeight: "19px", color: "#9d9d9d", letterSpacing: "-0.03em" }}>
                 presented by
               </span>
-              <span style={{ fontFamily: "var(--font-martian)", fontWeight: 600, fontSize: 14, color: "#fff", letterSpacing: "-0.03em" }}>
+              <span style={{ fontFamily: MARTIAN, fontWeight: 600, fontSize: 14.222, lineHeight: "19px", color: "#fff", letterSpacing: "-0.03em" }}>
                 Craft
               </span>
             </div>
           </div>
 
           {/* Newsletter */}
-          <div className="w-full lg:w-[443px] shrink-0 flex flex-col gap-5">
-            <p
-              style={{ fontFamily: "var(--font-hanken)", fontWeight: 500, fontSize: 24, letterSpacing: "-0.01em", color: "#f2f0ec" }}
-            >
+          <div className="w-full lg:w-[443px] shrink-0 flex flex-col" style={{ gap: 15 }}>
+            <p style={{ fontFamily: HANKEN, fontWeight: 500, fontSize: 24, letterSpacing: "-0.24px", lineHeight: "28px", color: "#f2f0ec", margin: 0 }}>
               Sign Up For Our Newsletter
             </p>
             <input
               type="email"
               placeholder="Enter e-mail address"
-              style={{
-                background: "#060607",
-                borderBottom: "1px solid #595959",
-                padding: "24px 16px",
-                fontFamily: "var(--font-martian)",
-                fontSize: 16,
-              }}
+              style={{ background: "var(--gray-06)", borderBottom: "1px solid var(--gray-59)", padding: "24px 16px", fontFamily: MARTIAN, fontSize: 16 }}
             />
           </div>
         </Reveal>
@@ -63,30 +74,28 @@ export default function Footer() {
           {COLUMNS.map((col, idx) => (
             <div
               key={col.head}
-              className="flex flex-col gap-6"
+              className="flex flex-col"
               style={{
                 padding: 32,
-                borderTop: "1px solid #505050",
-                borderLeft: "1px solid #505050",
-                borderBottom: "1px solid #505050",
-                borderRight: idx === COLUMNS.length - 1 ? "1px solid #505050" : undefined,
+                gap: 24,
+                borderTop: "1px solid var(--gray-3a)",
+                borderLeft: "1px solid var(--gray-3a)",
+                borderBottom: "1px solid var(--gray-3a)",
+                borderRight: idx === COLUMNS.length - 1 ? "1px solid var(--gray-3a)" : undefined,
               }}
             >
-              <span
-                className="uppercase"
-                style={{ fontFamily: "var(--font-martian)", fontWeight: 700, fontSize: 14, letterSpacing: "0.1em", color: "#9d9d9d" }}
-              >
+              <span className="uppercase" style={{ fontFamily: MARTIAN, fontWeight: 700, fontSize: 14, letterSpacing: "1.47px", lineHeight: "20px", color: "#9d9d9d" }}>
                 {col.head}
               </span>
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col" style={{ gap: 8 }}>
                 {col.links.map((link) => (
                   <a
-                    key={link}
-                    href="#"
+                    key={link.label}
+                    href={link.href}
                     className="hover:text-white transition-colors"
-                    style={{ fontFamily: "var(--font-hanken)", fontWeight: 400, fontSize: 16, lineHeight: "24px", color: "#9d9d9d" }}
+                    style={{ fontFamily: HANKEN, fontWeight: 400, fontSize: 16, lineHeight: "24px", color: "#9d9d9d", width: "fit-content" }}
                   >
-                    {link}
+                    {link.label}
                   </a>
                 ))}
               </div>
@@ -96,8 +105,8 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div
-          className="flex flex-col sm:flex-row justify-between gap-3"
-          style={{ fontFamily: "var(--font-martian)", fontSize: 14, color: "#fff", letterSpacing: "-0.03em", lineHeight: "20px" }}
+          className="flex flex-col sm:flex-row justify-between"
+          style={{ gap: 12, fontFamily: MARTIAN, fontSize: 14, color: "#fff", letterSpacing: "-1px", lineHeight: "20px" }}
         >
           <span>San Francisco · October 1, 2026</span>
           <span>© 2026 Craft Ventures</span>

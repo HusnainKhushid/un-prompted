@@ -1,39 +1,89 @@
-import { Eyebrow, ArrowButton } from "./shared";
-import { Reveal } from "./motion";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Eyebrow, ArrowButton, BRICOLAGE } from "./shared";
+
+const HEADING = "Marketing & growth will never be the same.";
+const BODY = [
+  "We are living in a new reality that mimics the inception of the internet. The challenge? How to grow, sustain, and retain in the Age of AI.",
+  "AI, LLMs, GEO, agents, and new systems are reshaping how teams acquire, convert, and retain customers, fast. What worked pre-2023 is dead.",
+  "Tactics go from successful to stale by the time you catch wind of them. The playbooks are constantly being rewritten. Unprompted brings together the founders, executives, operators, and builders at the forefront. Come learn what it takes to win in today's market from the best.",
+];
+
+const DIM = 0.28;
+const SOFT = 5; // words over which each brightens
 
 export default function Thesis() {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const el = ref.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight || 800;
+      const p = (vh * 0.82 - r.top) / (r.height + vh * 0.15);
+      setProgress(Math.max(0, Math.min(1, p)));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  // Flatten body into words with a global index for the reading highlight.
+  const paras = BODY.map((p) => p.split(" "));
+  const total = paras.reduce((n, w) => n + w.length, 0);
+  let gi = 0;
+
   return (
     <section
-      className="max-w-[1440px] mx-auto section-x"
-      style={{ paddingTop: 64, paddingBottom: 64, borderBottom: "1px solid #252525" }}
+      id="thesis"
+      className="section-x"
+      style={{ paddingTop: 64, paddingBottom: 64, borderBottom: "1px solid var(--gray-3a)" }}
     >
-      <div className="flex flex-col md:flex-row justify-between gap-10">
-        <Reveal className="shrink-0">
+      <div className="flex flex-col md:flex-row justify-between" style={{ gap: 40 }}>
+        <div className="shrink-0">
           <Eyebrow num="01" label="The Thesis" />
-        </Reveal>
-        <Reveal className="w-full md:max-w-[793px] flex flex-col gap-16" delay={80}>
-          <h2
+        </div>
+
+        <div ref={ref} className="w-full md:max-w-[793px] flex flex-col" style={{ gap: 64 }}>
+          <div
             style={{
-              fontFamily: "var(--font-bricolage)",
+              fontFamily: BRICOLAGE,
               fontWeight: 400,
-              fontSize: 36,
-              lineHeight: "42px",
-              letterSpacing: "-0.028em",
-              color: "#f1f4f6",
+              fontSize: "clamp(24px, 2.6vw, 36px)",
+              lineHeight: 1.17,
+              letterSpacing: "-1px",
             }}
           >
-            Growth marketing is being rewritten. Most teams haven&apos;t noticed yet.
-            <br />
-            <br />
-            AI, LLMs, GEO, agents, and new systems are reshaping how teams acquire,
-            convert, and retain customers — fast. The playbooks that worked in 2023 are
-            already overhead. Unprompted brings together the people building and adapting
-            to that shift, for one day of deep, tactical, high-signal conversation.
-          </h2>
-          <div>
-            <ArrowButton label="Apply to Attend" bg="#24ad49" fontSize={16} squareSize={28} variant="btn" />
+            <p style={{ margin: "0 0 1.1em", color: "#f1f4f6" }}>{HEADING}</p>
+            {paras.map((words, pi) => (
+              <p key={pi} style={{ margin: pi < paras.length - 1 ? "0 0 1.1em" : 0 }}>
+                {words.map((w, wi) => {
+                  const idx = gi++;
+                  const fill = Math.max(0, Math.min(1, (progress * total - idx) / SOFT));
+                  const opacity = DIM + (1 - DIM) * fill;
+                  return (
+                    <span key={wi} style={{ color: "#f1f4f6", opacity }}>
+                      {w}{wi < words.length - 1 ? " " : ""}
+                    </span>
+                  );
+                })}
+              </p>
+            ))}
           </div>
-        </Reveal>
+
+          <div>
+            <a href="#apply">
+              <ArrowButton label="Apply to Attend" bg="#24ad49" fontSize={16} squareSize={28} variant="btn" padLeft={12} />
+            </a>
+          </div>
+        </div>
       </div>
     </section>
   );

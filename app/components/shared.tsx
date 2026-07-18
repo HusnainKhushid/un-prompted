@@ -1,14 +1,21 @@
 import Image from "next/image";
 import arrowBtn from "@/public/assets/arrow-btn.svg";
-import arrowHero from "@/public/assets/arrow-hero.svg";
 import arrowNav from "@/public/assets/arrow-nav.svg";
+import arrowHero from "@/public/assets/arrow-hero.svg";
+import craftLogo from "@/public/assets/craft-logo.svg";
+
+/* Shared font stacks (variable fonts loaded in layout.tsx). */
+export const BRICOLAGE = "var(--font-bricolage)";
+export const MARTIAN = "var(--font-martian)";
+export const SPACE = "var(--font-space)";
+export const HANKEN = "var(--font-hanken)";
 
 /* ---------- Matrix rain background text ---------- */
 const MATRIX_TOKENS =
   "d8917fd cron { e152eb JOIN prompt# sched exec pid queue await $ ssh 200 OK SELECT * user_id attn 96db6ef apply agent.run() GET /growth/funnel model=gpt-x unprompted invite embed vec[ cache hit WHERE spawn conv++ geo.index ./deploy retain LTV CAC funnel[3] async yield 0xFA2 token.limit rag.query pipe | grep signal true false null void return { } => const let 42 3.14 npm run build ok fetch(url) await res.json() attn.head=12 loss=0.03 lr=1e-4 epoch 7/10 gpu:0 batch=64 SELECT count(*) FROM users WHERE cohort='2026' commit push origin main --force reindex done vector similarity 0.92 rerank top_k=8 stream chunk EOF ";
 
 export function MatrixBackground() {
-  const block = MATRIX_TOKENS.repeat(10);
+  const block = MATRIX_TOKENS.repeat(12);
   return (
     <div className="matrix-bg" aria-hidden>
       <pre>{block}</pre>
@@ -19,84 +26,85 @@ export function MatrixBackground() {
 /* ---------- Green glow blobs ---------- */
 export function GlowBlobs() {
   return (
-    <div aria-hidden className="absolute inset-0 z-0 overflow-hidden">
+    <div aria-hidden className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
       <div
         className="glow"
         style={{
-          width: 620,
-          height: 420,
-          top: -160,
-          left: "38%",
+          width: 1200,
+          height: 760,
+          top: -340,
+          left: "50%",
+          transform: "translateX(-50%)",
+          filter: "blur(4px)",
+          opacity: 0.32,
           background:
-            "radial-gradient(closest-side, rgba(112,229,88,0.30), rgba(112,229,88,0))",
+            "radial-gradient(closest-side, rgba(112,229,88,1), rgba(112,229,88,0) 72%)",
         }}
       />
       <div
         className="glow"
         style={{
-          width: 520,
-          height: 420,
-          top: -60,
-          right: -120,
+          width: 680,
+          height: 680,
+          top: -120,
+          right: -180,
+          filter: "blur(20px)",
+          opacity: 0.12,
           background:
-            "radial-gradient(closest-side, rgba(112,229,88,0.22), rgba(112,229,88,0))",
-        }}
-      />
-      <div
-        className="glow"
-        style={{
-          width: 560,
-          height: 460,
-          bottom: -180,
-          left: -140,
-          background:
-            "radial-gradient(closest-side, rgba(112,229,88,0.18), rgba(112,229,88,0))",
+            "radial-gradient(closest-side, rgba(112,229,88,1), rgba(112,229,88,0) 70%)",
         }}
       />
     </div>
   );
 }
 
-/* ---------- Big "un_prompted" animated wordmark ---------- */
+/* ---------- Big "un_prompted" animated wordmark ----------
+   `size` may be a number (px) or any CSS length string (e.g. a clamp()).
+   The underscore is sized in em so it scales with the font size. */
 export function Wordmark({
   size,
   className = "",
+  animate = true,
 }: {
-  size: number;
+  size: number | string;
   className?: string;
+  animate?: boolean;
 }) {
   const before = "un".split("");
   const after = "prompted".split("");
   let i = 0;
-  const delay = () => `${(i++ * 0.05).toFixed(2)}s`;
-
-  const underscoreW = size * 0.42;
-  const underscoreH = size * 0.11;
+  const delay = () => (animate ? `${(i++ * 0.05).toFixed(2)}s` : "0s");
+  const letterCls = animate ? "letter" : "";
+  const fontSize = typeof size === "number" ? `${size}px` : size;
 
   return (
-    <span
-      className={`wordmark ${className}`}
-      style={{ fontSize: size }}
-      aria-label="un_prompted"
-    >
+    <span className={`wordmark ${className}`} style={{ fontSize }} aria-label="un_prompted">
       {before.map((c, idx) => (
-        <span key={`b${idx}`} className="letter" style={{ animationDelay: delay() }}>
+        <span
+          key={`b${idx}`}
+          className={letterCls}
+          style={{ animationDelay: delay(), fontWeight: 700 }}
+        >
           {c}
         </span>
       ))}
       <span
-        className="underscore"
+        className={animate ? "underscore" : ""}
         style={{
-          width: underscoreW,
-          height: underscoreH,
-          marginLeft: size * 0.04,
-          marginRight: size * 0.04,
-          marginBottom: size * 0.02,
+          display: "inline-block",
+          background: "var(--green-bright)",
+          alignSelf: "flex-end",
+          boxShadow: "0 0 24px rgba(52,199,89,0.6)",
+          width: "0.42em",
+          height: "0.11em",
+          marginLeft: "0.04em",
+          marginRight: "0.04em",
+          marginBottom: "0.02em",
           animationDelay: delay(),
         }}
       />
       {after.map((c, idx) => (
-        <span key={`a${idx}`} className="letter" style={{ animationDelay: delay() }}>
+        <span key={`a${idx}`} className={letterCls} style={{ animationDelay: delay() }}>
           {c}
         </span>
       ))}
@@ -104,15 +112,15 @@ export function Wordmark({
   );
 }
 
-/* ---------- Small inline "unprompted" logotype (nav / footer) ---------- */
+/* ---------- Small inline "un_prompted" logotype (nav / footer) ---------- */
 export function LogoType({ size = 22 }: { size?: number }) {
   return (
     <span
-      style={{ fontFamily: "var(--font-space)", fontSize: size, letterSpacing: "-0.02em" }}
+      style={{ fontFamily: SPACE, fontSize: size, letterSpacing: "-0.02em" }}
       className="text-white inline-flex items-baseline leading-none"
       aria-label="un_prompted"
     >
-      un
+      <span style={{ fontWeight: 700 }}>un</span>
       <span
         style={{
           display: "inline-block",
@@ -128,6 +136,20 @@ export function LogoType({ size = 22 }: { size?: number }) {
   );
 }
 
+/* ---------- Craft Ventures logo ---------- */
+export function CraftLogo({ width = 68, className = "" }: { width?: number; className?: string }) {
+  return (
+    <Image
+      src={craftLogo}
+      alt="Craft Ventures"
+      width={width}
+      height={Math.round(width * 0.146)}
+      className={className}
+      style={{ width, height: "auto" }}
+    />
+  );
+}
+
 /* ---------- Arrow button (recurring pattern) ---------- */
 type ArrowVariant = "hero" | "nav" | "btn";
 const arrowSrc = { hero: arrowHero, nav: arrowNav, btn: arrowBtn };
@@ -139,6 +161,7 @@ export function ArrowButton({
   squareSize = 28,
   variant = "btn",
   fullWidth = false,
+  padLeft = 16,
 }: {
   label: string;
   bg?: string;
@@ -146,6 +169,7 @@ export function ArrowButton({
   squareSize?: number;
   variant?: ArrowVariant;
   fullWidth?: boolean;
+  padLeft?: number;
 }) {
   return (
     <button
@@ -153,11 +177,11 @@ export function ArrowButton({
       className={`arrow-btn press inline-flex items-center gap-3 ${
         fullWidth ? "w-full justify-between" : ""
       }`}
-      style={{ background: bg, paddingLeft: 16, paddingRight: 8, paddingTop: 8, paddingBottom: 8 }}
+      style={{ background: bg, paddingLeft: padLeft, paddingRight: 8, paddingTop: 8, paddingBottom: 8 }}
     >
       <span
         style={{
-          fontFamily: "var(--font-martian)",
+          fontFamily: MARTIAN,
           fontSize,
           color: "#151515",
           letterSpacing: "-0.03em",
@@ -173,8 +197,8 @@ export function ArrowButton({
         <Image
           src={arrowSrc[variant]}
           alt=""
-          width={Math.round(squareSize * 0.7)}
-          height={Math.round(squareSize * 0.7)}
+          width={Math.round(squareSize * 0.72)}
+          height={Math.round(squareSize * 0.72)}
         />
       </span>
     </button>
@@ -186,10 +210,43 @@ export function Eyebrow({ num, label }: { num: string; label: string }) {
   return (
     <div
       className="flex items-center gap-2 uppercase"
-      style={{ fontFamily: "var(--font-martian)", fontSize: 14, lineHeight: "14px", letterSpacing: "0.06em" }}
+      style={{ fontFamily: MARTIAN, fontSize: 14, lineHeight: "14px", letterSpacing: "1.2px" }}
     >
       <span style={{ color: "var(--green)" }}>{num}/</span>
       <span className="text-white">{label}</span>
     </div>
+  );
+}
+
+/* ---------- Big Bricolage section heading ---------- */
+export function SectionHeading({
+  children,
+  color = "#f2f0ec",
+  width,
+  weight = 500,
+  className = "",
+}: {
+  children: React.ReactNode;
+  color?: string;
+  width?: number;
+  weight?: number;
+  className?: string;
+}) {
+  return (
+    <h2
+      className={className}
+      style={{
+        fontFamily: BRICOLAGE,
+        fontWeight: weight,
+        fontSize: 48,
+        lineHeight: "52px",
+        letterSpacing: "-1px",
+        color,
+        maxWidth: width,
+        margin: 0,
+      }}
+    >
+      {children}
+    </h2>
   );
 }

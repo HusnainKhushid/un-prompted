@@ -1,59 +1,75 @@
-import Image from "next/image";
-import craftLogo from "@/public/assets/craft-logo.svg";
-import { LogoType, ArrowButton } from "./shared";
+"use client";
 
-const NAV_ITEMS = ["Thesis", "Who its for", "Program", "Speakers", "Apply"];
+import { LogoType, CraftLogo, ArrowButton, MARTIAN } from "./shared";
+
+const LINKS = [
+  { label: "Thesis", href: "#thesis" },
+  { label: "Who its for", href: "#who" },
+  { label: "Program", href: "#agenda" },
+  { label: "Speakers", href: "#speakers" },
+  { label: "Apply", href: "#apply" },
+];
 
 export default function Nav() {
   return (
-    <nav
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between"
+    <header
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between load-fade-up"
       style={{
         height: 69,
         padding: "16px 32px",
         background: "rgba(0,0,0,0.2)",
         backdropFilter: "blur(8px)",
         WebkitBackdropFilter: "blur(8px)",
-        borderBottom: "0.5px solid rgba(255,255,255,0.08)",
       }}
     >
-      {/* Left lockup */}
-      <div className="flex items-center gap-3">
-        <div style={{ borderRight: "0.5px solid rgba(255,255,255,0.5)", paddingRight: 12 }}>
-          <LogoType size={20} />
-        </div>
-        <div className="flex items-center gap-2">
-          <span
-            className="uppercase"
+      {/* Brand cluster */}
+      <div className="flex items-center" style={{ gap: 12 }}>
+        <a href="#top" aria-label="un_prompted home" className="sm:border-r sm:pr-3" style={{ borderColor: "rgba(255,255,255,0.5)" }}>
+          <LogoType size={21} />
+        </a>
+        <span
+          className="hidden sm:inline"
+          style={{
+            fontFamily: MARTIAN,
+            fontSize: 12,
+            lineHeight: "16px",
+            letterSpacing: "-1px",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.65)",
+          }}
+        >
+          Presented by
+        </span>
+        <span className="hidden sm:inline">
+          <CraftLogo width={68} />
+        </span>
+      </div>
+
+      {/* Center nav links */}
+      <nav className="hidden lg:flex items-center" style={{ gap: 24, paddingRight: 60 }}>
+        {LINKS.map((l) => (
+          <a
+            key={l.label}
+            href={l.href}
+            className="nav-link"
             style={{
-              fontFamily: "var(--font-martian)",
-              fontSize: 12,
-              color: "rgba(255,255,255,0.65)",
-              letterSpacing: "-0.05em",
+              fontFamily: MARTIAN,
+              fontSize: 14,
+              lineHeight: "18px",
+              letterSpacing: "-0.3px",
+              textTransform: "uppercase",
+              color: "#fff",
             }}
           >
-            presented by
-          </span>
-          <Image src={craftLogo} alt="Craft Ventures" height={10} style={{ height: 10, width: "auto" }} />
-        </div>
-      </div>
-
-      {/* Center nav */}
-      <div className="hidden lg:flex items-center gap-6">
-        {NAV_ITEMS.map((item) => (
-          <a
-            key={item}
-            href="#"
-            className="nav-link uppercase text-white/90 hover:text-white transition-colors"
-            style={{ fontFamily: "var(--font-martian)", fontSize: 14, lineHeight: "18px" }}
-          >
-            {item}
+            {l.label}
           </a>
         ))}
-      </div>
+      </nav>
 
-      {/* Right button */}
-      <ArrowButton label="Apply to Attend" fontSize={14} squareSize={26} variant="nav" />
-    </nav>
+      {/* CTA */}
+      <a href="#apply" className="hidden sm:block">
+        <ArrowButton label="Apply to Attend" variant="nav" fontSize={14} squareSize={26} padLeft={12} />
+      </a>
+    </header>
   );
 }

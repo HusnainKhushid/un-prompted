@@ -1,37 +1,24 @@
-import { Eyebrow } from "./shared";
+import { Eyebrow, SectionHeading, MARTIAN } from "./shared";
 import { Reveal, Stagger } from "./motion";
 
 const ITEMS = [
-  { n: "01", label: "Marketing leaders" },
-  { n: "02", label: "Growth leaders" },
-  { n: "03", label: "Founders" },
-  { n: "04", label: "GTM operators" },
-  { n: "05", label: "AI-forward teams" },
-  { n: "06", label: "Senior operators, high-growth companies" },
+  { n: "01", label: "Founders in AI & SaaS" },
+  { n: "02", label: "Marketing leaders" },
+  { n: "03", label: "Growth practitioners" },
+  { n: "04", label: "GTM Engineering innovators" },
+  { n: "05", label: "Applied AI tacticians" },
+  { n: "06", label: "High-growth operators" },
 ];
 
 export default function WhoItsFor() {
   return (
-    <section
-      className="max-w-[1440px] mx-auto section-x"
-      style={{ paddingTop: 64, paddingBottom: 64, borderBottom: "1px solid #252525" }}
-    >
-      <div className="flex flex-col gap-16">
-        <Reveal className="flex flex-col gap-16">
+    <section id="who" className="section-x" style={{ paddingTop: 64, paddingBottom: 64 }}>
+      <div className="flex flex-col" style={{ gap: 64 }}>
+        <Reveal className="flex flex-col" style={{ gap: 32 }}>
           <Eyebrow num="02" label="Who It's For" />
-          <h2
-            style={{
-              fontFamily: "var(--font-bricolage)",
-              fontWeight: 500,
-              fontSize: 48,
-              lineHeight: "52px",
-              letterSpacing: "-0.021em",
-              color: "#f2f0ec",
-              maxWidth: 649,
-            }}
-          >
-            A curated room of operators who actually ship.
-          </h2>
+          <SectionHeading width={649}>
+            The highest-signal room for marketing &amp; growth in 2026.
+          </SectionHeading>
         </Reveal>
 
         <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -43,26 +30,24 @@ export default function WhoItsFor() {
                 minHeight: 224,
                 padding: 44,
                 gap: 64,
-                borderTop: "1px solid #505050",
-                borderLeft: "1px solid #505050",
-                // right & bottom edges close the grid
-                borderRight: (idx + 1) % 3 === 0 ? "1px solid #505050" : undefined,
-                borderBottom: idx >= 3 ? "1px solid #505050" : undefined,
+                borderTop: "1px solid var(--gray-3a)",
+                borderLeft: "1px solid var(--gray-3a)",
+                borderRight: (idx + 1) % 3 === 0 ? "1px solid var(--gray-3a)" : undefined,
+                borderBottom: idx >= 3 ? "1px solid var(--gray-3a)" : undefined,
               }}
             >
               <span
                 className="who-num uppercase"
-                style={{ fontFamily: "var(--font-martian)", fontSize: 18, color: "#24ad49", lineHeight: "26px" }}
+                style={{ fontFamily: MARTIAN, fontSize: 18, color: "#24ad49", lineHeight: "26px" }}
               >
                 {item.n}
               </span>
               <span
                 style={{
-                  fontFamily: "var(--font-hanken)",
-                  fontWeight: 500,
+                  fontFamily: MARTIAN,
                   fontSize: 24,
                   lineHeight: "28px",
-                  letterSpacing: "-0.01em",
+                  letterSpacing: "-0.24px",
                   color: "#fff",
                 }}
               >

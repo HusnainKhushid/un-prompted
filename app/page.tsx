@@ -1,29 +1,19 @@
-import IntroSequence from "./components/IntroSequence";
-import Nav from "./components/Nav";
-import Hero from "./components/Hero";
-import Thesis from "./components/Thesis";
-import WhoItsFor from "./components/WhoItsFor";
-import WhatToExpect from "./components/WhatToExpect";
-import Speakers from "./components/Speakers";
-import Partners from "./components/Partners";
-import Agenda from "./components/Agenda";
-import Apply from "./components/Apply";
-import Footer from "./components/Footer";
+"use client";
 
+import { useState } from "react";
+import SiteContent from "./components/SiteContent";
+import IntroSequence from "./components/IntroSequence";
+
+/** Combined route — the intro animation plays over the site, then its mask
+ *  wipes away to reveal the site beneath. No navigation, so scrolling and the
+ *  browser back button behave normally afterwards. */
 export default function Home() {
+  const [revealed, setRevealed] = useState(false);
+
   return (
-    <main style={{ background: "#09090a" }}>
-      <IntroSequence />
-      <Nav />
-      <Hero />
-      <Thesis />
-      <WhoItsFor />
-      <WhatToExpect />
-      <Speakers />
-      <Partners />
-      <Agenda />
-      <Apply />
-      <Footer />
-    </main>
+    <>
+      <SiteContent />
+      {!revealed && <IntroSequence onReveal={() => setRevealed(true)} variant="simple" />}
+    </>
   );
 }

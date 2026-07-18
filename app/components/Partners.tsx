@@ -1,21 +1,19 @@
 import Image from "next/image";
-import { Eyebrow } from "./shared";
+import { Eyebrow, SectionHeading, MARTIAN, HANKEN } from "./shared";
 import { Reveal } from "./motion";
-import kpWordmark from "@/public/assets/keypartner-wordmark.svg";
-import kpMark from "@/public/assets/keypartner-mark.svg";
+import linkedinWord from "@/public/assets/fig-linkedin-word.svg";
+import linkedinIn from "@/public/assets/fig-linkedin-in.svg";
+import hubspot from "@/public/assets/fig-hubspot.svg";
 
 function PlaceholderLogo() {
-  // "logoipsum"-style placeholder partner logo
   return (
-    <div className="flex items-center gap-2 opacity-60" style={{ height: 24 }}>
-      <svg width="26" height="24" viewBox="0 0 26 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M13 0L26 7.5v9L13 24 0 16.5v-9L13 0z" fill="#9d9d9d" />
-        <path d="M13 5l8 4.6v4.8L13 19l-8-4.6V9.6L13 5z" fill="#151515" />
+    <div className="flex items-center gap-2" style={{ height: 24, opacity: 0.85 }}>
+      <svg width="24" height="24" viewBox="0 0 26 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M13 0L26 7.5v9L13 24 0 16.5v-9L13 0z" fill="#CACACA" />
+        <path d="M13 5l8 4.6v4.8L13 19l-8-4.6V9.6L13 5z" fill="#09090a" />
       </svg>
-      <span
-        style={{ fontFamily: "var(--font-hanken)", fontWeight: 600, fontSize: 18, color: "#9d9d9d", letterSpacing: "-0.01em" }}
-      >
-        logoipsum
+      <span style={{ fontFamily: HANKEN, fontWeight: 600, fontSize: 20, color: "#CACACA", letterSpacing: "-0.01em" }}>
+        Logoipsum
       </span>
     </div>
   );
@@ -23,59 +21,40 @@ function PlaceholderLogo() {
 
 export default function Partners() {
   return (
-    <section style={{ background: "#09090a", borderBottom: "1px solid #252525" }}>
-      <div className="max-w-[1440px] mx-auto section-x" style={{ paddingTop: 64, paddingBottom: 64 }}>
-        <div className="flex flex-col lg:flex-row" style={{ gap: 96 }}>
-          <Reveal className="w-full lg:w-[443px] shrink-0 flex flex-col gap-6">
-            <Eyebrow num="05" label="Partners" />
-            <h2
-              style={{
-                fontFamily: "var(--font-bricolage)",
-                fontWeight: 500,
-                fontSize: 48,
-                lineHeight: "52px",
-                letterSpacing: "-0.021em",
-                color: "#fff",
-              }}
-            >
-              Our Sponsors
-            </h2>
-          </Reveal>
+    <section style={{ background: "var(--page)" }} className="section-x">
+      <div className="flex flex-col lg:flex-row" style={{ paddingTop: 64, paddingBottom: 64, gap: 140 }}>
+        <Reveal className="w-full lg:w-[443px] shrink-0 flex flex-col" style={{ gap: 32 }}>
+          <Eyebrow num="05" label="Partners" />
+          <SectionHeading color="#ffffff">Our Sponsors</SectionHeading>
+        </Reveal>
 
-          <Reveal className="flex-1" delay={100}>
-            {/* Key partner */}
-            <div
-              className="flex flex-col md:flex-row md:items-center gap-6"
-              style={{ paddingBottom: 48, borderBottom: "1px solid #151515" }}
-            >
-              <span
-                className="md:w-[160px]"
-                style={{ fontFamily: "var(--font-hanken)", fontWeight: 500, fontSize: 24, letterSpacing: "-0.01em", color: "#fff" }}
-              >
-                Key Partner
-              </span>
-              <div className="flex items-center gap-2">
-                <Image src={kpWordmark} alt="LinkedIn" height={36} style={{ height: 36, width: "auto" }} />
-                <Image src={kpMark} alt="" height={40} style={{ height: 40, width: "auto" }} />
-              </div>
+        <Reveal className="flex-1" delay={100}>
+          {/* Key partner */}
+          <div
+            className="flex flex-col md:flex-row md:items-center"
+            style={{ gap: 24, paddingBottom: 48, borderBottom: "1px solid var(--gray-3a)" }}
+          >
+            <span style={{ fontFamily: MARTIAN, fontSize: 24, letterSpacing: "-0.24px", lineHeight: "28px", color: "#fff", minWidth: 160 }}>
+              Key Partner
+            </span>
+            <div className="flex items-center" style={{ gap: 8 }}>
+              <Image src={linkedinWord} alt="LinkedIn" height={38} style={{ height: 38, width: "auto" }} />
+              <Image src={linkedinIn} alt="" height={42} style={{ height: 42, width: "auto" }} />
             </div>
+          </div>
 
-            {/* Partners */}
-            <div className="flex flex-col md:flex-row md:items-center gap-6" style={{ paddingTop: 48 }}>
-              <span
-                className="md:w-[160px]"
-                style={{ fontFamily: "var(--font-hanken)", fontWeight: 500, fontSize: 24, letterSpacing: "-0.01em", color: "#fff" }}
-              >
-                Partners
-              </span>
-              <div className="flex flex-wrap items-center gap-16">
-                <PlaceholderLogo />
-                <PlaceholderLogo />
-                <PlaceholderLogo />
-              </div>
+          {/* Partners */}
+          <div className="flex flex-col md:flex-row md:items-center" style={{ gap: 24, paddingTop: 48 }}>
+            <span style={{ fontFamily: HANKEN, fontWeight: 500, fontSize: 24, letterSpacing: "-0.24px", color: "#fff", minWidth: 160 }}>
+              Partners
+            </span>
+            <div className="flex flex-wrap items-center" style={{ gap: 64 }}>
+              <Image src={hubspot} alt="HubSpot" height={36} style={{ height: 36, width: "auto" }} />
+              <PlaceholderLogo />
+              <PlaceholderLogo />
             </div>
-          </Reveal>
-        </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

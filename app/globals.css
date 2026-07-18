@@ -15,8 +15,13 @@
   --gray-59: #595959;
   --gray-50: #505050;
   --gray-40: #404040;
+  --gray-3a: #3a3a3a;
   --gray-37: #373737;
   --gray-25: #252525;
+  --gray-06: #060607;
+
+  /* Green terminal text */
+  --terminal-green: #e6ffe7;
 
   /* Greens */
   --green: #24ad49;
@@ -91,11 +96,12 @@ body {
 .wordmark {
   font-family: var(--font-space), monospace;
   font-weight: 400;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.045em;
   line-height: 0.92;
   color: #fff;
   display: inline-flex;
   align-items: baseline;
+  white-space: nowrap;
 }
 
 .wordmark .letter {
@@ -219,6 +225,15 @@ select option {
 .load-fade-up {
   opacity: 0;
   animation: fadeUp 640ms var(--ease-out) forwards;
+}
+
+/* ---- Whole-page fade-in on route entry (used by /home) ---- */
+@keyframes pageFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.page-fade-in {
+  animation: pageFadeIn 600ms ease both;
 }
 
 /* ---- Ambient glow drift (very slow, subtle) ---- */
@@ -370,112 +385,271 @@ select:focus,
   }
 }
 
-/* ---- Intro sequence (boot overlay + scrub-in-place hero video) ---- */
+
+/* ============================================================
+   Intro sequence — conveyor loader → morph → scroll-scrub reveal
+   ============================================================ */
 .intro-stage {
   position: fixed;
   inset: 0;
   z-index: 55;
   background: #000;
-  clip-path: inset(0 0 0 0);
+  overflow: hidden;
+}
+.intro-stage.is-fading {
+  opacity: 0;
+  transition: opacity 600ms var(--ease-in-out);
+}
+.intro-v2 {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.1); /* crop ~5% each edge to hide the Veo watermark */
+  transition: opacity 450ms ease;
+}
+.intro-flat {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(130% 90% at 50% 32%, #17171b 0%, #0a0a0c 55%, #050506 100%);
+  z-index: 1;
 }
 
-.intro-stage.is-revealing {
-  clip-path: inset(0 0 100% 0);
-  transition: clip-path 950ms cubic-bezier(0.55, 0, 0.85, 0.36);
-}
-
+/* Overlay */
 .intro-overlay {
   position: fixed;
   inset: 0;
   z-index: 60;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(1px);
-  transition: opacity 600ms var(--ease-in-out);
   font-family: var(--font-martian);
+  pointer-events: none;
+}
+.intro-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.08) 42%, rgba(0, 0, 0, 0.55));
+  pointer-events: none;
+}
+.intro-overlay.is-simple::before {
+  display: none;
 }
 
+/* Boot log conveyor — the highlight bar sits at a fixed Y (top of the track). */
 .intro-lines {
   position: absolute;
-  top: clamp(20px, 5vh, 44px);
-  left: clamp(16px, 4vw, 48px);
+  left: clamp(20px, 4vw, 56px);
+  top: 47%;
+  height: 40px;
+  transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
 }
-
+.intro-lines.is-out {
+  opacity: 0;
+}
+.intro-lines-track {
+  position: relative;
+  transition: transform 460ms var(--ease-out);
+  will-change: transform;
+}
 .intro-line {
-  margin: 0 0 7px;
-  font-size: clamp(10px, 0.9vw, 12px);
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-size: clamp(11px, 1vw, 14px);
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.9);
-  padding: 3px 6px;
+  color: #fff;
+  padding: 0 8px;
   width: fit-content;
-  animation: introLineIn 300ms var(--ease-out) both;
+  white-space: nowrap;
+  transition: opacity 460ms var(--ease-out), color 260ms var(--ease-out);
 }
-
 .intro-line.is-current {
   background: #fff;
   color: #000;
 }
 
-@keyframes introLineIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Status — mid right */
+.intro-status {
+  position: absolute;
+  right: clamp(20px, 4vw, 56px);
+  top: 48%;
+  transform: translateY(-50%);
+  margin: 0;
+  text-align: right;
+  font-size: clamp(11px, 1vw, 15px);
+  letter-spacing: 0.12em;
+  line-height: 1.55;
+  color: #fff;
+  transition: opacity 460ms var(--ease-out), transform 460ms var(--ease-out);
+}
+.intro-status.is-out {
+  opacity: 0;
 }
 
-.intro-center {
+/* Bottom cluster — always horizontally centered (counter ↔ gate share this) */
+.intro-bottom {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  bottom: clamp(30px, 8vh, 68px);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
-
 .intro-counter {
-  font-size: clamp(22px, 2.6vw, 34px);
+  font-size: clamp(26px, 3vw, 40px);
+  letter-spacing: 0.08em;
   color: #fff;
-  letter-spacing: 0.06em;
   text-shadow: 0 2px 24px rgba(0, 0, 0, 0.6);
 }
-
-.intro-enter {
-  font-family: var(--font-martian);
-  font-size: clamp(13px, 1.2vw, 16px);
-  letter-spacing: 0.35em;
-  text-indent: 0.35em;
-  background: #fff;
-  color: #000;
-  border: none;
-  cursor: pointer;
-  padding: 12px clamp(36px, 7vw, 80px);
-  animation: introLineIn 400ms var(--ease-out) both;
-  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+.intro-counter.is-morphing {
+  position: absolute;
+  animation: counterMorphOut 520ms var(--ease-out) forwards;
+}
+@keyframes counterMorphOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.55); filter: blur(3px); }
 }
 
-.intro-enter:hover {
+/* Enter gate — morphs in where the counter was */
+.intro-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  pointer-events: auto;
+  animation: gateMorphIn 560ms var(--ease-out) 120ms both;
+}
+@keyframes gateMorphIn {
+  from { opacity: 0; transform: scale(0.7); filter: blur(2px); }
+  to { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+.intro-audio-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-martian);
+  font-size: clamp(13px, 1.15vw, 16px);
+  letter-spacing: 0.14em;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 0;
+  padding: 12px 28px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background 200ms var(--ease-out), transform 200ms var(--ease-out);
+}
+.intro-audio-btn:hover {
+  background: rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
+}
+.intro-audio-arrow {
+  font-size: 1.2em;
+  line-height: 1;
+}
+.intro-nosound {
+  font-family: var(--font-martian);
+  font-size: clamp(12px, 1.1vw, 15px);
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.72);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color 180ms var(--ease-out);
+}
+.intro-nosound:hover {
+  color: #fff;
+}
+
+/* Standalone replay */
+.intro-replay {
+  position: fixed;
+  z-index: 60;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: fit-content;
+  bottom: clamp(28px, 8vh, 72px);
+  font-family: var(--font-martian);
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: #151515;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  padding: 12px 28px;
+  border-radius: 999px;
+  animation: gateMorphIn 500ms var(--ease-out) both;
+  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+}
+.intro-replay:hover {
   transform: scale(1.04);
   box-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
 }
 
-.intro-status {
-  position: absolute;
-  right: clamp(16px, 4vw, 48px);
-  bottom: clamp(20px, 5vh, 40px);
-  margin: 0;
-  font-size: clamp(10px, 0.9vw, 12px);
-  letter-spacing: 0.1em;
+/* Animated status ellipsis */
+.intro-dots span {
+  display: inline-block;
+  animation: dotPulse 1.3s ease-in-out infinite;
+}
+.intro-dots span:nth-child(2) { animation-delay: 0.18s; }
+.intro-dots span:nth-child(3) { animation-delay: 0.36s; }
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+/* Scroll-to-continue prompt (after entering) */
+.intro-scrollhint {
+  position: fixed;
+  z-index: 60;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: fit-content;
+  bottom: clamp(28px, 8vh, 60px);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-martian);
+  font-size: clamp(13px, 1.2vw, 16px);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   color: #fff;
-  text-align: right;
+  pointer-events: none;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
+  animation: hintIn 500ms var(--ease-out);
+  transition: opacity 400ms var(--ease-out);
+}
+.intro-scrollhint.is-hidden {
+  opacity: 0;
+}
+.intro-scrollhint-arrow {
+  font-size: 1.2em;
+  animation: scrollBounce 1.4s ease-in-out infinite;
+}
+@keyframes hintIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro-overlay,
+  .intro-lines-track,
   .intro-line,
-  .intro-enter,
-  .intro-stage.is-revealing {
+  .intro-counter.is-morphing,
+  .intro-gate,
+  .intro-stage.is-fading,
+  .intro-v2 {
     animation: none;
     transition: none;
   }
