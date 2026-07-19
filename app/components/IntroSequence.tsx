@@ -44,7 +44,7 @@ export default function IntroSequence({
   const phaseRef = useRef<Phase>("loading");
   phaseRef.current = phase;
 
-  const videoSrc = variant === "simple" ? "/assets/hero-v3.mp4" : "/assets/hero-v2.mp4";
+  const videoSrc = variant === "simple" ? "/assets/hero-v2-noreveal.mp4" : "/assets/hero-v3.mp4";
 
   // Reduced motion → skip to reveal / final frame.
   useEffect(() => {
