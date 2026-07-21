@@ -665,14 +665,20 @@ select option {
   }
 
   /* Speaker photo zoom */
-  /* Zoom eases in AND out (symmetric curve), so it starts and lands softly
-     instead of snapping the way ease-out did. */
+  /* The exports carry a bright strip a few pixels deep on some edges (Amjad's
+     right side is the worst). A small resting scale crops those pixels off
+     before they can show. Source art is ~2.2x the rendered size, so scaling up
+     costs no sharpness. Both photo layers share this, keeping them in register. */
   .speaker-photo {
+    --edge-crop: 1.03;
+    transform: scale(var(--edge-crop));
     transition: transform 700ms var(--ease-in-out);
     will-change: transform;
   }
+  /* Zoom eases in AND out (symmetric curve), so it starts and lands softly
+     instead of snapping the way ease-out did. */
   .speaker-card:hover .speaker-photo {
-    transform: scale(1.045);
+    transform: scale(calc(var(--edge-crop) * 1.045));
   }
 
   /* The green portrait crossfades at the peak of that curve. --ease-in-out is
@@ -765,9 +771,13 @@ select:focus,
   .cursor-blink {
     animation: none;
   }
-  .speaker-card:hover .speaker-photo,
   .arrow-btn:hover .arrow-square {
     transform: none;
+  }
+  /* Drop the hover zoom but keep the edge crop, otherwise the bright export
+     edge reappears on hover. */
+  .speaker-card:hover .speaker-photo {
+    transform: scale(var(--edge-crop));
   }
   /* Keep the crossfade, drop the travel. */
   .apply-face,

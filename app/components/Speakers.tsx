@@ -27,9 +27,12 @@ const SIZES = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 442px";
 function Card({ s }: { s: Speaker }) {
   return (
     <div className="speaker-card">
+      {/* Black, not the Figma frame's white: these photos are near-black at the
+          edges, so a white backdrop shows as a bright seam wherever the image
+          isn't painting — while loading, or along a composite edge. */}
       <div
         className="relative w-full overflow-hidden"
-        style={{ aspectRatio: "442 / 450", background: "#fff" }}
+        style={{ aspectRatio: "442 / 450", background: "#000" }}
       >
         <Image
           src={s.img}
