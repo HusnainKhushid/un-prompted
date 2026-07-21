@@ -59,7 +59,9 @@ function TerminalCard() {
         </div>
 
         <div className="load-fade-up" style={{ animationDelay: "820ms" }}>
-          <ArrowButton label="Apply to Attend" fontSize={16} squareSize={32} variant="hero" />
+          <a href="#apply">
+            <ArrowButton label="Apply to Attend" fontSize={16} squareSize={32} variant="hero" />
+          </a>
         </div>
       </div>
     </div>
@@ -136,7 +138,7 @@ export default function Hero() {
             <Wordmark
               className="is-optical"
               size="clamp(36px, min(calc((100vw - 64px) / 6.03), calc((100svh - var(--hero-reserved)) / 0.92)), 560px)"
-              effect="decode"
+              effect="blur-focus"
             />
           </div>
           <div

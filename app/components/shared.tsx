@@ -67,19 +67,17 @@ export function GlowBlobs() {
    The underscore is sized in em so it scales with the font size.
 
    `effect`:
-     "rise"   — the original per-letter fade/rise (CSS keyframes)
-     "decode" — GSAP scramble-decode: each character churns through a few
-                glyphs and settles, resolving left→right. No jitter, no RGB
-                split — it should read as the mark quietly resolving. */
-
-const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+     "rise"       — the original per-letter fade/rise (CSS keyframes)
+     "blur-focus" — GSAP: characters arrive out of focus and slightly oversized,
+                    then resolve sharp on a light stagger, like a lens finding
+                    the subject. The underscore pops in as it lands. */
 
 /* The mark renders fully visible in the markup — the animation hides it in a
    layout effect (before paint) and animates it back. If GSAP never runs, the
    worst case is no animation rather than an invisible wordmark. */
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-function useDecodeWordmark(enabled: boolean) {
+function useBlurFocusWordmark(enabled: boolean) {
   const rootRef = useRef<HTMLSpanElement | null>(null);
 
   useIsoLayoutEffect(() => {
@@ -88,61 +86,52 @@ function useDecodeWordmark(enabled: boolean) {
 
     const chars = Array.from(root.querySelectorAll<HTMLElement>(".wm-char"));
     const bar = root.querySelector<HTMLElement>(".wm-bar");
-    const finals = chars.map((el) => el.dataset.char ?? el.textContent ?? "");
+    const targets = bar ? [...chars, bar] : chars;
 
+    // Clear only what the animation touched — the "un" characters carry an
+    // inline fontWeight from the markup that must survive.
     const settle = () => {
-      chars.forEach((el, i) => {
-        el.textContent = finals[i];
-        el.style.opacity = "1";
-      });
-      if (bar) bar.style.opacity = "1";
+      gsap.killTweensOf(targets);
+      gsap.set(targets, { clearProps: "opacity,filter,transform,scale" });
     };
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    chars.forEach((el) => (el.style.opacity = "0"));
-    if (bar) bar.style.opacity = "0";
+    // Blur is proportional to the mark, so it reads identically at any size
+    // (the hero clamps roughly 36px → 560px).
+    const fontSize = parseFloat(getComputedStyle(root).fontSize) || 100;
+    const blur = Math.round(fontSize * 0.16);
+
+    gsap.set(targets, { opacity: 0 });
 
     // Safety net: if the ticker never advances (backgrounded tab, GSAP failure),
     // show the mark anyway rather than leaving a blank hero.
     const failsafe = window.setTimeout(settle, 3200);
 
     const ctx = gsap.context(() => {
-      const proxy = { i: 0 };
-      let frame = 0;
-
-      const tl = gsap.timeline({ delay: 0.2 });
-
-      // Characters resolve left→right; only the ~2.5 characters at the leading
-      // edge are still churning, and they fade up as they approach.
-      tl.to(proxy, {
-        i: chars.length,
-        duration: 1.4,
-        ease: "power1.inOut",
-        onUpdate() {
-          frame += 1;
-          const swap = frame % 3 === 0; // ~20fps churn — calmer than every frame
-          chars.forEach((el, idx) => {
-            const d = proxy.i - idx;
-            if (d >= 1) {
-              if (el.textContent !== finals[idx]) el.textContent = finals[idx];
-              el.style.opacity = "1";
-            } else if (d > -2.5) {
-              el.style.opacity = (0.18 + ((d + 2.5) / 3.5) * 0.82).toFixed(3);
-              if (swap) el.textContent = GLYPHS[(Math.random() * GLYPHS.length) | 0];
-            } else {
-              el.style.opacity = "0";
-            }
-          });
-          // The underscore lights up as the decode sweeps past it (it sits
-          // between "un" and "prompted", i.e. index 2).
-          if (bar) bar.style.opacity = proxy.i >= 2 ? "1" : "0";
-        },
+      const tl = gsap.timeline({
+        delay: 0.15,
         onComplete: () => {
           window.clearTimeout(failsafe);
           settle();
         },
       });
+
+      tl.fromTo(
+        chars,
+        { opacity: 0, filter: `blur(${blur}px)`, scale: 1.1 },
+        { opacity: 1, filter: "blur(0px)", scale: 1, duration: 1.1, ease: "power3.out", stagger: 0.03 },
+      );
+
+      // Underscore pops in just as the letters land.
+      if (bar) {
+        tl.fromTo(
+          bar,
+          { opacity: 0, scaleY: 0 },
+          { opacity: 1, scaleY: 1, duration: 0.35, ease: "back.out(3)" },
+          0.7,
+        );
+      }
     }, root);
 
     return () => {
@@ -164,16 +153,16 @@ export function Wordmark({
   size: number | string;
   className?: string;
   animate?: boolean;
-  effect?: "rise" | "decode";
+  effect?: "rise" | "blur-focus";
 }) {
-  const glitch = animate && effect === "decode";
-  const rootRef = useDecodeWordmark(glitch);
+  const focus = animate && effect === "blur-focus";
+  const rootRef = useBlurFocusWordmark(focus);
 
   const before = "un".split("");
   const after = "prompted".split("");
   let i = 0;
-  const delay = () => (animate && !glitch ? `${(i++ * 0.05).toFixed(2)}s` : "0s");
-  const letterCls = glitch ? "wm-char" : animate ? "letter" : "";
+  const delay = () => (animate && !focus ? `${(i++ * 0.05).toFixed(2)}s` : "0s");
+  const letterCls = focus ? "wm-char" : animate ? "letter" : "";
   const fontSize = typeof size === "number" ? `${size}px` : size;
 
   return (
@@ -194,7 +183,7 @@ export function Wordmark({
         </span>
       ))}
       <span
-        className={glitch ? "wm-bar" : animate ? "underscore" : ""}
+        className={focus ? "wm-bar" : animate ? "underscore" : ""}
         style={{
           display: "inline-block",
           background: "var(--green-bright)",
@@ -336,12 +325,16 @@ export function SectionHeading({
   color = "#f2f0ec",
   width,
   weight = 500,
+  size = 48,
   className = "",
 }: {
   children: React.ReactNode;
   color?: string;
   width?: number;
   weight?: number;
+  /** Section headings are 48px; secondary lines (e.g. "More coming soon...")
+   *  drop to 36 while keeping the 52px leading. */
+  size?: number;
   className?: string;
 }) {
   return (
@@ -350,7 +343,7 @@ export function SectionHeading({
       style={{
         fontFamily: BRICOLAGE,
         fontWeight: weight,
-        fontSize: 48,
+        fontSize: size,
         lineHeight: "52px",
         letterSpacing: "-1px",
         color,

@@ -7,56 +7,47 @@ import michael from "@/public/assets/speaker-michael.png";
 import michaelHover from "@/public/assets/speaker-michael-hover.png";
 import sarika from "@/public/assets/speaker-sarika.png";
 import sarikaHover from "@/public/assets/speaker-sarika-hover.png";
-import tbd from "@/public/assets/speaker-tbd.png";
 
 type Speaker = {
   img: StaticImageData;
   /** Green matrix-tinted variant shown on hover. */
-  hover?: StaticImageData;
+  hover: StaticImageData;
   name: string;
   title: string;
 };
 
-const ROW_1: Speaker[] = [
-  { img: amjad, hover: amjadHover, name: "Amjad Masad", title: "Founder at Replit" },
+const SPEAKERS: Speaker[] = [
+  { img: amjad, hover: amjadHover, name: "Amjad Masad", title: "Founder, Replit" },
   { img: michael, hover: michaelHover, name: "Michael Grinich", title: "Founder, WorkOS" },
-  { img: sarika, hover: sarikaHover, name: "Sarika Garg", title: "GM at HubSpot" },
-];
-const ROW_2: Speaker[] = [
-  { img: tbd, name: "TBD", title: "Designation" },
-  { img: tbd, name: "TBD", title: "Designation" },
-  { img: tbd, name: "TBD", title: "Designation" },
+  { img: sarika, hover: sarikaHover, name: "Sarika Garg", title: "GM, HubSpot" },
 ];
 
 const SIZES = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 442px";
 
-function Card({ s, priority }: { s: Speaker; priority?: boolean }) {
+function Card({ s }: { s: Speaker }) {
   return (
     <div className="speaker-card">
       <div
         className="relative w-full overflow-hidden"
-        style={{ aspectRatio: "442 / 450", background: "linear-gradient(180deg, #b1b1b1 0%, #010101 100%)" }}
+        style={{ aspectRatio: "442 / 450", background: "#fff" }}
       >
         <Image
           src={s.img}
           alt={s.name}
           fill
           sizes={SIZES}
-          priority={priority}
           className="speaker-photo"
           style={{ objectFit: "cover", objectPosition: "center bottom" }}
         />
-        {s.hover && (
-          <Image
-            src={s.hover}
-            alt=""
-            aria-hidden
-            fill
-            sizes={SIZES}
-            className="speaker-photo speaker-photo-hover"
-            style={{ objectFit: "cover", objectPosition: "center bottom" }}
-          />
-        )}
+        <Image
+          src={s.hover}
+          alt=""
+          aria-hidden
+          fill
+          sizes={SIZES}
+          className="speaker-photo speaker-photo-hover"
+          style={{ objectFit: "cover", objectPosition: "center bottom" }}
+        />
       </div>
       <div className="flex flex-col uppercase" style={{ paddingTop: 24, gap: 8 }}>
         <span style={{ fontFamily: BRICOLAGE, fontWeight: 400, fontSize: 20, lineHeight: "24px", letterSpacing: "-0.2px", color: "#fff" }}>
@@ -70,25 +61,24 @@ function Card({ s, priority }: { s: Speaker; priority?: boolean }) {
 
 export default function Speakers() {
   return (
-    <section id="speakers" className="section-x" style={{ paddingTop: 64, paddingBottom: 64, borderBottom: "1px solid var(--gray-3a)" }}>
+    <section id="speakers" className="section-x" style={{ background: "#000", paddingTop: 64, paddingBottom: 64, borderBottom: "1px solid var(--gray-3a)" }}>
       <div className="flex flex-col" style={{ gap: 64 }}>
-        <Reveal className="flex flex-col" style={{ gap: 32 }}>
+        <Reveal className="flex flex-col" style={{ gap: 24 }}>
           <Eyebrow num="04" label="Featured Speakers" />
-          <SectionHeading width={649}>Founders. Builders. Operators.</SectionHeading>
+          <SectionHeading width={719}>Founders. Builders. Operators.</SectionHeading>
         </Reveal>
 
-        <div className="flex flex-col" style={{ gap: 24 }}>
-          <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 24 }}>
-            {ROW_1.map((s) => (
-              <Card key={s.name} s={s} />
-            ))}
-          </Stagger>
-          <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 24 }}>
-            {ROW_2.map((s, i) => (
-              <Card key={`tbd-${i}`} s={s} />
-            ))}
-          </Stagger>
-        </div>
+        <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 24 }}>
+          {SPEAKERS.map((s) => (
+            <Card key={s.name} s={s} />
+          ))}
+        </Stagger>
+
+        <Reveal>
+          <SectionHeading width={719} size={36}>
+            More coming soon...
+          </SectionHeading>
+        </Reveal>
       </div>
     </section>
   );

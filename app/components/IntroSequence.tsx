@@ -62,7 +62,9 @@ export default function IntroSequence({
   useEffect(() => {
     const locked = phase !== "held";
     document.body.style.overflow = locked ? "hidden" : "";
-    if (locked) window.scrollTo(0, 0);
+    // Explicitly instant — html now has scroll-behavior: smooth, which would
+    // otherwise animate this reset while the intro is running.
+    if (locked) window.scrollTo({ top: 0, behavior: "instant" });
     return () => {
       document.body.style.overflow = "";
     };
