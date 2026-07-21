@@ -1,20 +1,48 @@
 import Image from "next/image";
-import { Eyebrow, SectionHeading, MARTIAN, HANKEN } from "./shared";
+import { Eyebrow, SectionHeading, HANKEN } from "./shared";
 import { Reveal } from "./motion";
 import linkedinWord from "@/public/assets/fig-linkedin-word.svg";
 import linkedinIn from "@/public/assets/fig-linkedin-in.svg";
+import clay from "@/public/assets/partner-clay.png";
 import hubspot from "@/public/assets/fig-hubspot.svg";
 
-function PlaceholderLogo() {
+/** One partner tier: label on the left, logos on the right. */
+function Tier({
+  label,
+  children,
+  first,
+  divider,
+}: {
+  label: string;
+  children: React.ReactNode;
+  first?: boolean;
+  divider?: boolean;
+}) {
   return (
-    <div className="flex items-center gap-2" style={{ height: 24, opacity: 0.85 }}>
-      <svg width="24" height="24" viewBox="0 0 26 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M13 0L26 7.5v9L13 24 0 16.5v-9L13 0z" fill="#CACACA" />
-        <path d="M13 5l8 4.6v4.8L13 19l-8-4.6V9.6L13 5z" fill="#09090a" />
-      </svg>
-      <span style={{ fontFamily: HANKEN, fontWeight: 600, fontSize: 20, color: "#CACACA", letterSpacing: "-0.01em" }}>
-        Logoipsum
+    <div
+      className="flex flex-col md:flex-row md:items-center w-full"
+      style={{
+        gap: 24,
+        /* Uniform 48px above and below every logo band, so the bands sit at an
+           equal pitch and the divider lands midway between the first two. */
+        paddingTop: first ? 0 : 48,
+        paddingBottom: 48,
+        /* box-shadow rather than border: it paints the same 1px rule without
+           adding to the row's height, keeping the pitch exactly even. */
+        boxShadow: divider ? "0 1px 0 var(--gray-3a)" : undefined,
+      }}
+    >
+      <span
+        className="shrink-0"
+        style={{ fontFamily: HANKEN, fontWeight: 500, fontSize: 24, letterSpacing: "-0.01em", lineHeight: "28px", color: "#fff", width: 125 }}
+      >
+        {label}
       </span>
+      {/* Fixed band height keeps the pitch even even though the logos differ
+          in height (LinkedIn 42, Clay 50, HubSpot 36). */}
+      <div className="flex flex-wrap items-center flex-1" style={{ gap: 64, minHeight: 50 }}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -24,36 +52,27 @@ export default function Partners() {
     <section style={{ background: "var(--page)" }} className="section-x">
       <div className="flex flex-col lg:flex-row" style={{ paddingTop: 64, paddingBottom: 64, gap: 140 }}>
         <Reveal className="w-full lg:w-[443px] shrink-0 flex flex-col" style={{ gap: 32 }}>
-          <Eyebrow num="05" label="Partners" />
-          <SectionHeading color="#ffffff">Our Sponsors</SectionHeading>
+          <Eyebrow num="05" label="Our Partners" />
+          <SectionHeading color="#ffffff" width={383}>
+            Backed by Industry Leaders
+          </SectionHeading>
         </Reveal>
 
-        <Reveal className="flex-1" delay={100}>
-          {/* Key partner */}
-          <div
-            className="flex flex-col md:flex-row md:items-center"
-            style={{ gap: 24, paddingBottom: 48, borderBottom: "1px solid var(--gray-3a)" }}
-          >
-            <span style={{ fontFamily: MARTIAN, fontSize: 24, letterSpacing: "-0.24px", lineHeight: "28px", color: "#fff", minWidth: 160 }}>
-              Key Partner
-            </span>
-            <div className="flex items-center" style={{ gap: 8 }}>
+        <Reveal className="flex-1 flex flex-col" delay={100}>
+          <Tier label="Marquee" first divider>
+            <span className="flex items-center" style={{ gap: 8 }}>
               <Image src={linkedinWord} alt="LinkedIn" height={38} style={{ height: 38, width: "auto" }} />
               <Image src={linkedinIn} alt="" height={42} style={{ height: 42, width: "auto" }} />
-            </div>
-          </div>
-
-          {/* Partners */}
-          <div className="flex flex-col md:flex-row md:items-center" style={{ gap: 24, paddingTop: 48 }}>
-            <span style={{ fontFamily: HANKEN, fontWeight: 500, fontSize: 24, letterSpacing: "-0.24px", color: "#fff", minWidth: 160 }}>
-              Partners
             </span>
-            <div className="flex flex-wrap items-center" style={{ gap: 64 }}>
-              <Image src={hubspot} alt="HubSpot" height={36} style={{ height: 36, width: "auto" }} />
-              <PlaceholderLogo />
-              <PlaceholderLogo />
-            </div>
-          </div>
+          </Tier>
+
+          <Tier label="Premium">
+            <Image src={clay} alt="Clay" height={50} style={{ height: 50, width: "auto" }} />
+          </Tier>
+
+          <Tier label="Brand">
+            <Image src={hubspot} alt="HubSpot" height={36} style={{ height: 36, width: "auto" }} />
+          </Tier>
         </Reveal>
       </div>
     </section>

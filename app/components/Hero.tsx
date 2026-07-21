@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { GlowBlobs, Wordmark, ArrowButton, CraftLogo, MARTIAN, SPACE } from "./shared";
+import { useSound } from "./SoundContext";
 
 const PROMPT = "rgba(135,234,92,0.62)";
 
@@ -34,7 +36,7 @@ function TerminalCard() {
       </div>
 
       {/* Body */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 24, padding: "16px 16px 24px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 20, padding: "16px 16px 20px" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 8, fontFamily: MARTIAN, fontSize: 14 }}>
           <p style={{ margin: 0, lineHeight: "22px" }}>
             <span style={{ color: PROMPT }}>unprompted:~$ </span>
@@ -65,15 +67,30 @@ function TerminalCard() {
 }
 
 export default function Hero() {
+  const { on } = useSound();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Autoplay requires muted; the nav toggle unmutes on a user gesture.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = !on;
+    v.volume = on ? 1 : 0;
+    if (on) void v.play().catch(() => {});
+  }, [on]);
+
   return (
     <section
       id="top"
       className="relative overflow-hidden flex flex-col"
-      style={{ minHeight: "min(920px, 100svh)", background: "#000" }}
+      /* Full viewport height — the old 920px ceiling capped the vertical room the
+         wordmark could claim, so the mark could never grow on large displays. */
+      style={{ minHeight: "100svh", background: "#000" }}
     >
       {/* Background video */}
       <video
         aria-hidden
+        ref={videoRef}
         src="/assets/hero-loop.mp4"
         autoPlay
         loop
@@ -90,8 +107,10 @@ export default function Hero() {
       />
 
       {/* Content column — terminal top, wordmark + date bar bottom; flex keeps them apart */}
-      <div className="relative mx-auto w-full flex flex-col" style={{ maxWidth: 1440, zIndex: 3, flex: 1, paddingTop: 80 }}>
-        <div style={{ paddingLeft: 32, paddingRight: 32, maxWidth: 704 }}>
+      {/* Full-bleed: the hero fills the viewport, unlike the 1440-capped sections below */}
+      <div className="relative w-full flex flex-col" style={{ zIndex: 3, flex: 1, paddingTop: 88, paddingBottom: 24 }}>
+        {/* zoom (not transform) so the shrink actually gives its height back */}
+        <div style={{ paddingLeft: 32, paddingRight: 32, maxWidth: 704, zoom: "var(--terminal-zoom)" }}>
           <TerminalCard />
         </div>
 
@@ -105,10 +124,25 @@ export default function Hero() {
           >
             Invite-Only Summit
           </p>
-          <div style={{ marginTop: 2 }}>
-            <Wordmark size="clamp(44px, min(15vw, 25vh), 216px)" />
+          <div>
+            {/* Sized to fill, bounded by whichever axis runs out first:
+                  width  — with the optical trim the *ink* is 6.03em wide, so
+                           (viewport − gutters)/6.03 lands it on the gutter.
+                  height — everything else in the column (nav pad, terminal, eyebrow,
+                           by-Craft, date bar, bottom pad) costs --hero-reserved, and the
+                           mark's box is 0.92em tall, so that's what's left over.
+                On normal displays width wins and the mark spans edge to edge; on short
+                viewports height wins so the date bar never drops below the fold. */}
+            <Wordmark
+              className="is-optical"
+              size="clamp(36px, min(calc((100vw - 64px) / 6.03), calc((100svh - var(--hero-reserved)) / 0.92)), 560px)"
+              effect="decode"
+            />
           </div>
-          <div className="flex items-end load-fade-up" style={{ gap: 16, marginTop: 4, animationDelay: "520ms" }}>
+          <div
+            className="flex items-end justify-end load-fade-up"
+            style={{ gap: 16, marginTop: 4, animationDelay: "520ms" }}
+          >
             <span
               className="uppercase"
               style={{ fontFamily: MARTIAN, fontWeight: 500, fontSize: "clamp(16px, 2vw, 28px)", letterSpacing: "-0.08em", lineHeight: 1, color: "rgba(255,255,255,0.65)" }}
@@ -124,16 +158,16 @@ export default function Hero() {
           className="grid grid-cols-1 md:grid-cols-2 load-fade-up"
           style={{ marginTop: 16, borderTop: "1px solid var(--gray-3a)", borderBottom: "1px solid var(--gray-3a)", animationDelay: "620ms" }}
         >
-          <div style={{ padding: "22px 24px", borderLeft: "1px solid var(--gray-3a)", display: "flex", flexDirection: "column", gap: 16 }}>
-            <p className="uppercase" style={{ fontFamily: MARTIAN, fontSize: 20, lineHeight: "28px", letterSpacing: "1px", color: "#9d9d9d", margin: 0 }}>
+          <div style={{ padding: "16px 24px", borderLeft: "1px solid var(--gray-3a)", display: "flex", flexDirection: "column", gap: 10 }}>
+            <p className="uppercase" style={{ fontFamily: MARTIAN, fontSize: 18, lineHeight: "24px", letterSpacing: "1px", color: "#9d9d9d", margin: 0 }}>
               Date
             </p>
             <p style={{ fontFamily: MARTIAN, fontSize: 24, lineHeight: "32px", letterSpacing: "-1px", color: "#fff", margin: 0 }}>
               October 1, 2026
             </p>
           </div>
-          <div style={{ padding: "22px 24px", borderLeft: "1px solid var(--gray-3a)", borderRight: "1px solid var(--gray-3a)", display: "flex", flexDirection: "column", gap: 16 }}>
-            <p className="uppercase" style={{ fontFamily: MARTIAN, fontSize: 20, lineHeight: "28px", letterSpacing: "1px", color: "#9d9d9d", margin: 0 }}>
+          <div style={{ padding: "16px 24px", borderLeft: "1px solid var(--gray-3a)", borderRight: "1px solid var(--gray-3a)", display: "flex", flexDirection: "column", gap: 10 }}>
+            <p className="uppercase" style={{ fontFamily: MARTIAN, fontSize: 18, lineHeight: "24px", letterSpacing: "1px", color: "#9d9d9d", margin: 0 }}>
               Location
             </p>
             <p style={{ margin: 0, display: "flex", alignItems: "baseline", gap: 9, flexWrap: "wrap" }}>

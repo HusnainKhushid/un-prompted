@@ -1,5 +1,6 @@
 import { MatrixBackground, GlowBlobs, Wordmark, MARTIAN, HANKEN } from "./shared";
 import { Reveal, Stagger } from "./motion";
+import Newsletter from "./Newsletter";
 
 const COLUMNS = [
   {
@@ -56,17 +57,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Newsletter */}
-          <div className="w-full lg:w-[443px] shrink-0 flex flex-col" style={{ gap: 15 }}>
-            <p style={{ fontFamily: HANKEN, fontWeight: 500, fontSize: 24, letterSpacing: "-0.24px", lineHeight: "28px", color: "#f2f0ec", margin: 0 }}>
-              Sign Up For Our Newsletter
-            </p>
-            <input
-              type="email"
-              placeholder="Enter e-mail address"
-              style={{ background: "var(--gray-06)", borderBottom: "1px solid var(--gray-59)", padding: "24px 16px", fontFamily: MARTIAN, fontSize: 16 }}
-            />
-          </div>
+          <Newsletter />
         </Reveal>
 
         {/* Link columns */}
@@ -92,8 +83,8 @@ export default function Footer() {
                   <a
                     key={link.label}
                     href={link.href}
-                    className="hover:text-white transition-colors"
-                    style={{ fontFamily: HANKEN, fontWeight: 400, fontSize: 16, lineHeight: "24px", color: "#9d9d9d", width: "fit-content" }}
+                    className="footer-link"
+                    style={{ fontFamily: HANKEN, fontWeight: 400, fontSize: 16, lineHeight: "24px", width: "fit-content" }}
                   >
                     {link.label}
                   </a>

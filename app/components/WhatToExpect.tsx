@@ -35,9 +35,9 @@ export default function WhatToExpect() {
     >
       <div className="flex flex-col" style={{ paddingTop: 64, paddingBottom: 64, gap: 64 }}>
         <Reveal className="flex flex-col" style={{ gap: 32 }}>
-          <Eyebrow num="03" label="What to Expect" />
+          <Eyebrow num="03" label="Experience" />
           <SectionHeading color="#ffffff" width={649}>
-            What to Expect
+            What You&apos;ll Experience
           </SectionHeading>
         </Reveal>
 

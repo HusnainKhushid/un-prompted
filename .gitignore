@@ -6,3 +6,9 @@
 *.pem
 .env*
 next-env.d.ts
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Raw video sources (encoded versions live alongside as hero-*.mp4)
+/public/assets/*[[]without reveal[]]*.mp4

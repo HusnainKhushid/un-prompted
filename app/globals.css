@@ -92,6 +92,230 @@ body {
   z-index: 0;
 }
 
+/* ----- Hero vertical budget -----
+   The wordmark is sized to fill the line, so on short viewports something has to
+   give. The terminal card shrinks first (it reads fine smaller); --hero-reserved
+   is everything the wordmark is NOT allowed to claim, and tracks the zoom. */
+:root {
+  --terminal-zoom: 1;
+  --hero-reserved: 636px;
+}
+@media (max-height: 900px) {
+  :root {
+    --terminal-zoom: 0.85;
+    --hero-reserved: 580px;
+  }
+}
+@media (max-height: 800px) {
+  :root {
+    --terminal-zoom: 0.75;
+    --hero-reserved: 542px;
+  }
+}
+
+/* Section heading that tracks its (much taller) content column while scrolling.
+   Only on wide layouts — stacked mobile has nothing to stick against. */
+@media (min-width: 1024px) {
+  .sticky-col {
+    position: sticky;
+    top: 101px; /* 69px nav + 32px breathing room */
+  }
+}
+
+/* Footer links — the inline color used to beat Tailwind's hover:text-white,
+   so the hover never actually applied. */
+.footer-link {
+  color: #9d9d9d;
+  transition: color 160ms ease;
+}
+.footer-link:hover,
+.footer-link:focus-visible {
+  color: #fff;
+}
+
+/* ----- Apply: form ⇄ confirmation crossfade -----
+   Both faces occupy the same grid cell. The outgoing form keeps `visibility`
+   until its fade finishes, so it holds the column's height throughout and the
+   section never collapses when the shorter panel takes over. */
+.apply-swap {
+  display: grid;
+  height: 100%;
+}
+.apply-swap > .apply-face {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+.apply-face {
+  transition:
+    opacity 340ms var(--ease-out),
+    transform 340ms var(--ease-out),
+    visibility 0s;
+}
+.apply-face.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  /* hold visibility until the fade is done, then drop it */
+  transition-delay: 0s, 0s, 340ms;
+}
+.apply-form-face.is-hidden {
+  transform: translateY(-12px);
+}
+.apply-panel-face {
+  display: flex;
+}
+.apply-panel-face.is-hidden {
+  transform: translateY(12px);
+}
+/* Let the form clear out before the panel arrives. */
+.apply-panel-face:not(.is-hidden) {
+  transition-delay: 130ms, 130ms, 0s;
+}
+.apply-panel-face > * {
+  width: 100%;
+}
+
+/* ----- Footer newsletter -----
+   The box holds its own size; only the contents crossfade, so submitting never
+   shifts the footer. Same stacked-grid trick as the apply panel. */
+.newsletter-box {
+  background: var(--gray-06);
+  border-bottom: 1px solid var(--gray-59);
+  padding: 0 8px 0 16px;
+}
+.newsletter-swap {
+  display: grid;
+}
+.newsletter-swap > .newsletter-face {
+  grid-area: 1 / 1;
+  min-width: 0;
+  align-self: center;
+}
+.newsletter-face {
+  transition:
+    opacity 300ms var(--ease-out),
+    transform 300ms var(--ease-out),
+    visibility 0s;
+}
+.newsletter-face.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transition-delay: 0s, 0s, 300ms;
+}
+.newsletter-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.newsletter-form.is-hidden {
+  transform: translateY(-8px);
+}
+.newsletter-done.is-hidden {
+  transform: translateY(8px);
+}
+.newsletter-done:not(.is-hidden) {
+  transition-delay: 110ms, 110ms, 0s;
+}
+
+/* Submit chip — revealed as soon as the field has content. */
+.newsletter-send {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  color: #151515;
+  border: 0;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateX(-6px) scale(0.86);
+  pointer-events: none;
+  transition:
+    opacity 220ms var(--ease-out),
+    transform 220ms var(--ease-out),
+    background 160ms ease;
+}
+.newsletter-send.is-ready {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.newsletter-send:hover,
+.newsletter-send:focus-visible {
+  background: var(--green-bright);
+}
+
+/* ----- /lab/footer-bg scratch route (delete with the route) ----- */
+.lab-panel {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--gray-3a);
+  min-height: 300px;
+  display: flex;
+  align-items: flex-end;
+}
+.lab-panel .lab-field {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 10px;
+  font-family: var(--font-martian), monospace;
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: 0.5px;
+  color: rgba(52, 199, 89, 0.42);
+  white-space: pre-wrap;
+  word-break: break-all;
+  pointer-events: none;
+  text-shadow: 0 0 12px rgba(52, 199, 89, 0.35);
+}
+.lab-drift {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.lab-drift .lab-field {
+  position: absolute;
+  inset: auto 0 auto 0;
+  height: 200%;
+  animation: labDrift 34s linear infinite;
+}
+.lab-drift .lab-field:nth-child(1) { top: 0; }
+.lab-drift .lab-field:nth-child(2) { top: 100%; }
+@keyframes labDrift {
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+/* ----- Nav sound toggle ----- */
+.sound-toggle {
+  border: 0;
+  cursor: pointer;
+  transition: background 180ms ease;
+}
+.sound-toggle:hover {
+  background: rgba(255, 255, 255, 0.24) !important;
+}
+.sound-toggle-icon {
+  opacity: 0.5;
+  transition: opacity 180ms ease;
+}
+.sound-toggle-icon.is-on {
+  opacity: 1;
+  animation: soundPulse 1.6s ease-in-out infinite;
+}
+@keyframes soundPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
 /* ----- Big animated wordmark ----- */
 .wordmark {
   font-family: var(--font-space), monospace;
@@ -126,6 +350,38 @@ body {
     transform: translateY(0);
   }
 }
+
+/* GSAP-driven scramble/glitch variant (hero). Characters are monospace-boxed
+   so the scramble never reflows the line while it decodes. */
+/* Visible by default — the decode effect hides these in a layout effect, so a
+   JS failure degrades to "no animation" instead of "no wordmark". */
+.wordmark .wm-char {
+  display: inline-block;
+  will-change: opacity;
+}
+
+/* Optical trim — Space Mono carries a 0.078em left bearing on "u" and a 0.063em
+   right bearing on "d", so the glyphs stop well short of the text box. Pulling
+   those back lets the *ink* meet the gutter instead of the box. */
+/* em here resolves against the wordmark's own font-size, closing the 0.169em of
+   empty line box that sits above the cap height. */
+.wordmark.is-optical {
+  margin-top: -0.13em;
+}
+.wordmark.is-optical > *:first-child {
+  margin-left: -0.078em;
+}
+.wordmark.is-optical > *:last-child {
+  margin-right: -0.063em;
+}
+
+.wordmark .wm-bar {
+  display: inline-block;
+  background: var(--green-bright);
+  align-self: flex-end;
+  box-shadow: 0 0 24px rgba(52, 199, 89, 0.6);
+}
+
 
 @keyframes blink {
   0%,
@@ -287,12 +543,29 @@ select option {
   }
 
   /* Speaker photo zoom */
+  /* Zoom eases in AND out (symmetric curve), so it starts and lands softly
+     instead of snapping the way ease-out did. */
   .speaker-photo {
-    transition: transform 500ms var(--ease-out);
+    transition: transform 700ms var(--ease-in-out);
     will-change: transform;
   }
   .speaker-card:hover .speaker-photo {
     transform: scale(1.045);
+  }
+
+  /* The green portrait crossfades at the peak of that curve. --ease-in-out is
+     symmetric, so peak velocity is the midpoint (350ms of 700ms); a 240ms fade
+     delayed 230ms is centred exactly there — the swap happens while the eye is
+     tracking the fastest motion, which hides the cut. linear keeps the fade
+     itself even. Reversing on hover-out is symmetric for free. */
+  .speaker-photo-hover {
+    opacity: 0;
+    transition:
+      opacity 240ms linear 230ms,
+      transform 700ms var(--ease-in-out);
+  }
+  .speaker-card:hover .speaker-photo-hover {
+    opacity: 1;
   }
 
   /* Who-it's-for cell: number glows on hover */
@@ -372,6 +645,15 @@ select:focus,
   }
   .speaker-card:hover .speaker-photo,
   .arrow-btn:hover .arrow-square {
+    transform: none;
+  }
+  /* Keep the crossfade, drop the travel. */
+  .apply-face,
+  .apply-face.is-hidden,
+  .newsletter-face,
+  .newsletter-face.is-hidden,
+  .newsletter-send,
+  .newsletter-send.is-ready {
     transform: none;
   }
 }

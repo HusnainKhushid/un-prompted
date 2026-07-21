@@ -1,6 +1,7 @@
 "use client";
 
 import { LogoType, CraftLogo, ArrowButton, MARTIAN } from "./shared";
+import SoundToggle from "./SoundToggle";
 
 const LINKS = [
   { label: "Thesis", href: "#thesis" },
@@ -13,15 +14,19 @@ const LINKS = [
 export default function Nav() {
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between load-fade-up"
+      className="fixed top-0 left-0 right-0 z-50 load-fade-up"
       style={{
         height: 69,
-        padding: "16px 32px",
         background: "rgba(0,0,0,0.2)",
         backdropFilter: "blur(8px)",
         WebkitBackdropFilter: "blur(8px)",
       }}
     >
+      {/* Full-bleed: brand hugs the left edge, CTA cluster the right */}
+      <div
+        className="w-full h-full flex items-center justify-between"
+        style={{ padding: "0 32px" }}
+      >
       {/* Brand cluster */}
       <div className="flex items-center" style={{ gap: 12 }}>
         <a href="#top" aria-label="un_prompted home" className="sm:border-r sm:pr-3" style={{ borderColor: "rgba(255,255,255,0.5)" }}>
@@ -46,7 +51,7 @@ export default function Nav() {
       </div>
 
       {/* Center nav links */}
-      <nav className="hidden lg:flex items-center" style={{ gap: 24, paddingRight: 60 }}>
+      <nav className="hidden lg:flex items-center" style={{ gap: 24 }}>
         {LINKS.map((l) => (
           <a
             key={l.label}
@@ -66,10 +71,14 @@ export default function Nav() {
         ))}
       </nav>
 
-      {/* CTA */}
-      <a href="#apply" className="hidden sm:block">
-        <ArrowButton label="Apply to Attend" variant="nav" fontSize={14} squareSize={26} padLeft={12} />
-      </a>
+      {/* Sound + CTA */}
+      <div className="flex items-center" style={{ gap: 12 }}>
+        <SoundToggle />
+        <a href="#apply" className="hidden sm:block">
+          <ArrowButton label="Apply to Attend" variant="nav" fontSize={14} squareSize={26} padLeft={12} />
+        </a>
+      </div>
+      </div>
     </header>
   );
 }

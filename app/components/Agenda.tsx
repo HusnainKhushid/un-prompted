@@ -18,9 +18,12 @@ export default function Agenda() {
   return (
     <section id="agenda" style={{ background: "var(--page)", borderTop: "1px solid var(--gray-3a)" }} className="section-x">
       <div className="flex flex-col lg:flex-row justify-between" style={{ paddingTop: 64, paddingBottom: 64, gap: 64 }}>
-        <Reveal className="w-full lg:w-[443px] shrink-0 flex flex-col" style={{ gap: 32 }}>
-          <Eyebrow num="06" label="Agenda" />
-          <SectionHeading color="#ffffff">Agenda Preview</SectionHeading>
+        {/* Heading tracks the schedule as it scrolls past */}
+        <Reveal className="w-full lg:w-[443px] shrink-0">
+          <div className="sticky-col flex flex-col" style={{ gap: 32 }}>
+            <Eyebrow num="06" label="Event Schedule" />
+            <SectionHeading color="#ffffff">A Day Designed for High Signal</SectionHeading>
+          </div>
         </Reveal>
 
         <Stagger className="w-full lg:max-w-[879px] flex-1">

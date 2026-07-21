@@ -1,25 +1,36 @@
 import Image, { type StaticImageData } from "next/image";
 import { Eyebrow, SectionHeading, BRICOLAGE, MARTIAN } from "./shared";
 import { Reveal, Stagger } from "./motion";
-import jeff from "@/public/assets/fig-speaker-jeff.png";
-import brian from "@/public/assets/fig-speaker-brian.png";
-import scott from "@/public/assets/fig-speaker-scott.png";
-import placeholder from "@/public/assets/fig-speaker-placeholder.png";
+import amjad from "@/public/assets/speaker-amjad.png";
+import amjadHover from "@/public/assets/speaker-amjad-hover.png";
+import michael from "@/public/assets/speaker-michael.png";
+import michaelHover from "@/public/assets/speaker-michael-hover.png";
+import sarika from "@/public/assets/speaker-sarika.png";
+import sarikaHover from "@/public/assets/speaker-sarika-hover.png";
+import tbd from "@/public/assets/speaker-tbd.png";
 
-type Speaker = { img: StaticImageData; name: string; title: string };
+type Speaker = {
+  img: StaticImageData;
+  /** Green matrix-tinted variant shown on hover. */
+  hover?: StaticImageData;
+  name: string;
+  title: string;
+};
 
 const ROW_1: Speaker[] = [
-  { img: jeff, name: "Jeff Fluhr", title: "Co-Founder and CEO, Cognition" },
-  { img: brian, name: "Brian Murray", title: "Co-Founder and CEO, Cognition" },
-  { img: scott, name: "Scott Wu", title: "Co-Founder and CEO, Cognition" },
+  { img: amjad, hover: amjadHover, name: "Amjad Masad", title: "Founder at Replit" },
+  { img: michael, hover: michaelHover, name: "Michael Grinich", title: "Founder, WorkOS" },
+  { img: sarika, hover: sarikaHover, name: "Sarika Garg", title: "GM at HubSpot" },
 ];
 const ROW_2: Speaker[] = [
-  { img: placeholder, name: "Name", title: "Designation" },
-  { img: placeholder, name: "Name", title: "Designation" },
-  { img: placeholder, name: "Name", title: "Designation" },
+  { img: tbd, name: "TBD", title: "Designation" },
+  { img: tbd, name: "TBD", title: "Designation" },
+  { img: tbd, name: "TBD", title: "Designation" },
 ];
 
-function Card({ s }: { s: Speaker }) {
+const SIZES = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 442px";
+
+function Card({ s, priority }: { s: Speaker; priority?: boolean }) {
   return (
     <div className="speaker-card">
       <div
@@ -30,10 +41,22 @@ function Card({ s }: { s: Speaker }) {
           src={s.img}
           alt={s.name}
           fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 442px"
+          sizes={SIZES}
+          priority={priority}
           className="speaker-photo"
-          style={{ objectFit: "cover" }}
+          style={{ objectFit: "cover", objectPosition: "center bottom" }}
         />
+        {s.hover && (
+          <Image
+            src={s.hover}
+            alt=""
+            aria-hidden
+            fill
+            sizes={SIZES}
+            className="speaker-photo speaker-photo-hover"
+            style={{ objectFit: "cover", objectPosition: "center bottom" }}
+          />
+        )}
       </div>
       <div className="flex flex-col uppercase" style={{ paddingTop: 24, gap: 8 }}>
         <span style={{ fontFamily: BRICOLAGE, fontWeight: 400, fontSize: 20, lineHeight: "24px", letterSpacing: "-0.2px", color: "#fff" }}>
@@ -50,19 +73,19 @@ export default function Speakers() {
     <section id="speakers" className="section-x" style={{ paddingTop: 64, paddingBottom: 64, borderBottom: "1px solid var(--gray-3a)" }}>
       <div className="flex flex-col" style={{ gap: 64 }}>
         <Reveal className="flex flex-col" style={{ gap: 32 }}>
-          <Eyebrow num="04" label="Speakers" />
-          <SectionHeading width={649}>Speakers</SectionHeading>
+          <Eyebrow num="04" label="Featured Speakers" />
+          <SectionHeading width={649}>Founders. Builders. Operators.</SectionHeading>
         </Reveal>
 
         <div className="flex flex-col" style={{ gap: 24 }}>
           <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 24 }}>
-            {ROW_1.map((s, i) => (
-              <Card key={`r1-${i}`} s={s} />
+            {ROW_1.map((s) => (
+              <Card key={s.name} s={s} />
             ))}
           </Stagger>
           <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 24 }}>
             {ROW_2.map((s, i) => (
-              <Card key={`r2-${i}`} s={s} />
+              <Card key={`tbd-${i}`} s={s} />
             ))}
           </Stagger>
         </div>

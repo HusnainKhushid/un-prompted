@@ -23,7 +23,10 @@ export default function Thesis() {
       if (!el) return;
       const r = el.getBoundingClientRect();
       const vh = window.innerHeight || 800;
-      const p = (vh * 0.82 - r.top) / (r.height + vh * 0.15);
+      // Midway between the original pacing (finished only after the block had
+      // scrolled past) and running fully ahead of it: the reveal now completes
+      // shortly after the block settles into view.
+      const p = (vh * 0.885 - r.top) / (r.height * 0.925 + vh * 0.075);
       setProgress(Math.max(0, Math.min(1, p)));
     };
     onScroll();
@@ -66,7 +69,11 @@ export default function Thesis() {
               <p key={pi} style={{ margin: pi < paras.length - 1 ? "0 0 1.1em" : 0 }}>
                 {words.map((w, wi) => {
                   const idx = gi++;
-                  const fill = Math.max(0, Math.min(1, (progress * total - idx) / SOFT));
+                  // Sweep past the last word by SOFT, otherwise the highlight
+                  // edge lands on the final word at progress 1 and the tail
+                  // never reaches full opacity.
+                  const head = progress * (total + SOFT);
+                  const fill = Math.max(0, Math.min(1, (head - idx) / SOFT));
                   const opacity = DIM + (1 - DIM) * fill;
                   return (
                     <span key={wi} style={{ color: "#f1f4f6", opacity }}>

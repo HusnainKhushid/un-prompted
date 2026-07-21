@@ -16,8 +16,12 @@ const N = BOOT_LINES.length;
 const LINE_H = 40;
 const SCRUB_DISTANCE = 2600;
 const LOAD_DURATION = 3400; // ms for the loader to fill
+const GRANTED_BEAT = 240; // pause after 100% before "ACCESS GRANTED" lands
+const GRANTED_HOLD = 2000; // how long that state is held before fading out
 
-type Phase = "loading" | "enter" | "scrub" | "reveal" | "held";
+/** "granted" holds the finished ACCESS GRANTED state; "enter" fades it out and
+ *  brings up the audio gate. */
+type Phase = "loading" | "granted" | "enter" | "scrub" | "reveal" | "held";
 type Variant = "depth" | "simple";
 
 function lineOpacity(d: number): number {
@@ -79,12 +83,20 @@ export default function IntroSequence({
     return () => clearInterval(id);
   }, [phase]);
 
+  // 100% → settle into ACCESS GRANTED …
   useEffect(() => {
     if (phase === "loading" && active === N - 1 && percent >= 100) {
-      const t = window.setTimeout(() => setPhase("enter"), 560);
+      const t = window.setTimeout(() => setPhase("granted"), GRANTED_BEAT);
       return () => clearTimeout(t);
     }
   }, [phase, active, percent]);
+
+  // … hold it there, then fade out and offer the audio gate.
+  useEffect(() => {
+    if (phase !== "granted") return;
+    const t = window.setTimeout(() => setPhase("enter"), GRANTED_HOLD);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   const onVideoReady = () => {
     videoReady.current = true;
@@ -199,7 +211,10 @@ export default function IntroSequence({
     };
   }, [phase, onReveal]);
 
-  const loaderVisible = phase === "loading" || phase === "enter";
+  const loaderVisible = phase === "loading" || phase === "granted" || phase === "enter";
+  /** ACCESS GRANTED is shown for the whole hold, then through the fade. */
+  const granted = phase === "granted" || phase === "enter";
+  /** Only the last phase actually fades the loader chrome away. */
   const leaving = phase === "enter";
 
   return (
@@ -243,7 +258,7 @@ export default function IntroSequence({
           <p className={`intro-status ${leaving ? "is-out" : ""}`}>
             STATUS:
             <br />
-            {leaving ? (
+            {granted ? (
               <span style={{ color: "var(--green-bright)" }}>ACCESS&nbsp;GRANTED.</span>
             ) : (
               <span style={{ color: "#e8ff5a" }}>
@@ -259,7 +274,7 @@ export default function IntroSequence({
 
           {/* Counter → morphs into the enter gate at 100% */}
           <div className="intro-bottom">
-            {phase === "loading" && (
+            {(phase === "loading" || phase === "granted") && (
               <span className="intro-counter">(&nbsp;{String(percent).padStart(2, "0")}%&nbsp;)</span>
             )}
             {phase === "enter" && (

@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useLayoutEffect, useRef } from "react";
+import gsap from "gsap";
 import Image from "next/image";
 import arrowBtn from "@/public/assets/arrow-btn.svg";
 import arrowNav from "@/public/assets/arrow-nav.svg";
@@ -60,36 +64,137 @@ export function GlowBlobs() {
 
 /* ---------- Big "un_prompted" animated wordmark ----------
    `size` may be a number (px) or any CSS length string (e.g. a clamp()).
-   The underscore is sized in em so it scales with the font size. */
+   The underscore is sized in em so it scales with the font size.
+
+   `effect`:
+     "rise"   — the original per-letter fade/rise (CSS keyframes)
+     "decode" — GSAP scramble-decode: each character churns through a few
+                glyphs and settles, resolving left→right. No jitter, no RGB
+                split — it should read as the mark quietly resolving. */
+
+const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+/* The mark renders fully visible in the markup — the animation hides it in a
+   layout effect (before paint) and animates it back. If GSAP never runs, the
+   worst case is no animation rather than an invisible wordmark. */
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+function useDecodeWordmark(enabled: boolean) {
+  const rootRef = useRef<HTMLSpanElement | null>(null);
+
+  useIsoLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!enabled || !root) return;
+
+    const chars = Array.from(root.querySelectorAll<HTMLElement>(".wm-char"));
+    const bar = root.querySelector<HTMLElement>(".wm-bar");
+    const finals = chars.map((el) => el.dataset.char ?? el.textContent ?? "");
+
+    const settle = () => {
+      chars.forEach((el, i) => {
+        el.textContent = finals[i];
+        el.style.opacity = "1";
+      });
+      if (bar) bar.style.opacity = "1";
+    };
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    chars.forEach((el) => (el.style.opacity = "0"));
+    if (bar) bar.style.opacity = "0";
+
+    // Safety net: if the ticker never advances (backgrounded tab, GSAP failure),
+    // show the mark anyway rather than leaving a blank hero.
+    const failsafe = window.setTimeout(settle, 3200);
+
+    const ctx = gsap.context(() => {
+      const proxy = { i: 0 };
+      let frame = 0;
+
+      const tl = gsap.timeline({ delay: 0.2 });
+
+      // Characters resolve left→right; only the ~2.5 characters at the leading
+      // edge are still churning, and they fade up as they approach.
+      tl.to(proxy, {
+        i: chars.length,
+        duration: 1.4,
+        ease: "power1.inOut",
+        onUpdate() {
+          frame += 1;
+          const swap = frame % 3 === 0; // ~20fps churn — calmer than every frame
+          chars.forEach((el, idx) => {
+            const d = proxy.i - idx;
+            if (d >= 1) {
+              if (el.textContent !== finals[idx]) el.textContent = finals[idx];
+              el.style.opacity = "1";
+            } else if (d > -2.5) {
+              el.style.opacity = (0.18 + ((d + 2.5) / 3.5) * 0.82).toFixed(3);
+              if (swap) el.textContent = GLYPHS[(Math.random() * GLYPHS.length) | 0];
+            } else {
+              el.style.opacity = "0";
+            }
+          });
+          // The underscore lights up as the decode sweeps past it (it sits
+          // between "un" and "prompted", i.e. index 2).
+          if (bar) bar.style.opacity = proxy.i >= 2 ? "1" : "0";
+        },
+        onComplete: () => {
+          window.clearTimeout(failsafe);
+          settle();
+        },
+      });
+    }, root);
+
+    return () => {
+      window.clearTimeout(failsafe);
+      ctx.revert();
+      settle();
+    };
+  }, [enabled]);
+
+  return rootRef;
+}
+
 export function Wordmark({
   size,
   className = "",
   animate = true,
+  effect = "rise",
 }: {
   size: number | string;
   className?: string;
   animate?: boolean;
+  effect?: "rise" | "decode";
 }) {
+  const glitch = animate && effect === "decode";
+  const rootRef = useDecodeWordmark(glitch);
+
   const before = "un".split("");
   const after = "prompted".split("");
   let i = 0;
-  const delay = () => (animate ? `${(i++ * 0.05).toFixed(2)}s` : "0s");
-  const letterCls = animate ? "letter" : "";
+  const delay = () => (animate && !glitch ? `${(i++ * 0.05).toFixed(2)}s` : "0s");
+  const letterCls = glitch ? "wm-char" : animate ? "letter" : "";
   const fontSize = typeof size === "number" ? `${size}px` : size;
 
   return (
-    <span className={`wordmark ${className}`} style={{ fontSize }} aria-label="un_prompted">
+    <span
+      ref={rootRef}
+      className={`wordmark ${className}`}
+      style={{ fontSize }}
+      aria-label="un_prompted"
+    >
       {before.map((c, idx) => (
         <span
           key={`b${idx}`}
           className={letterCls}
+          data-char={c}
           style={{ animationDelay: delay(), fontWeight: 700 }}
         >
           {c}
         </span>
       ))}
       <span
-        className={animate ? "underscore" : ""}
+        className={glitch ? "wm-bar" : animate ? "underscore" : ""}
         style={{
           display: "inline-block",
           background: "var(--green-bright)",
@@ -104,7 +209,12 @@ export function Wordmark({
         }}
       />
       {after.map((c, idx) => (
-        <span key={`a${idx}`} className={letterCls} style={{ animationDelay: delay() }}>
+        <span
+          key={`a${idx}`}
+          className={letterCls}
+          data-char={c}
+          style={{ animationDelay: delay() }}
+        >
           {c}
         </span>
       ))}
@@ -162,6 +272,7 @@ export function ArrowButton({
   variant = "btn",
   fullWidth = false,
   padLeft = 16,
+  type = "button",
 }: {
   label: string;
   bg?: string;
@@ -170,10 +281,11 @@ export function ArrowButton({
   variant?: ArrowVariant;
   fullWidth?: boolean;
   padLeft?: number;
+  type?: "button" | "submit";
 }) {
   return (
     <button
-      type="button"
+      type={type}
       className={`arrow-btn press inline-flex items-center gap-3 ${
         fullWidth ? "w-full justify-between" : ""
       }`}
