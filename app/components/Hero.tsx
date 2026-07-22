@@ -157,9 +157,12 @@ export default function Hero() {
 
         {/* Date / Location bar */}
         <div
-          className="grid grid-cols-1 md:grid-cols-2 load-fade-up"
+          className="grid grid-cols-1 md:grid-cols-[1fr_24fr_24fr_1fr] load-fade-up"
           style={{ marginTop: 16, borderTop: "1px solid var(--gray-3a)", borderBottom: "1px solid var(--gray-3a)", animationDelay: "620ms" }}
         >
+          {/* Empty left column acting as padding */}
+          <div className="hidden md:block" />
+          
           <div style={{ padding: "16px 24px", borderLeft: "1px solid var(--gray-3a)", display: "flex", flexDirection: "column", gap: 10 }}>
             <p className="uppercase" style={{ fontFamily: MARTIAN, fontSize: 18, lineHeight: "24px", letterSpacing: "1px", color: "#9d9d9d", margin: 0 }}>
               Date
@@ -179,6 +182,9 @@ export default function Hero() {
               </span>
             </p>
           </div>
+
+          {/* Empty right column acting as padding */}
+          <div className="hidden md:block" />
         </div>
       </div>
     </section>
