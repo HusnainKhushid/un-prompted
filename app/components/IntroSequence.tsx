@@ -122,12 +122,25 @@ export default function IntroSequence({
     if (v) {
       v.muted = !withAudio;
       v.volume = withAudio ? 1 : 0;
+    }
+    // The "simple" variant uses a no-reveal video — no scrub needed.
+    // Go straight to reveal/held so the site appears immediately on Enter.
+    if (variant === "simple") {
+      if (onReveal) {
+        setPhase("reveal");
+        window.setTimeout(onReveal, 620);
+      } else {
+        setPhase("held");
+      }
+      return;
+    }
+    if (v) {
       v.pause();
       v.currentTime = 0;
     }
     setScrolled(false);
     setPhase("scrub");
-  }, []);
+  }, [variant, onReveal]);
 
   const replay = useCallback(() => {
     const v = videoRef.current;
