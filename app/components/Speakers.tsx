@@ -4,9 +4,9 @@ import { Reveal, Stagger } from "./motion";
 import amjad from "@/public/assets/speaker-amjad.png";
 import amjadHover from "@/public/assets/speaker-amjad-hover.png";
 import michael from "@/public/assets/speaker-michael.png";
-import michaelHover from "@/public/assets/speaker-michael-hover.png";
+import michaelHover from "@/public/assets/Michael Grinich-hover.png";
 import sarika from "@/public/assets/speaker-sarika.png";
-import sarikaHover from "@/public/assets/speaker-sarika-hover.png";
+import sarikaHover from "@/public/assets/Sarika Garg-hover.png";
 
 type Speaker = {
   img: StaticImageData;
