@@ -82,7 +82,7 @@ export default function Speakers() {
 
         <Reveal>
           <SectionHeading width={719} size={36}>
-            More coming soon...
+            Many more being announced soon...
           </SectionHeading>
         </Reveal>
       </div>
