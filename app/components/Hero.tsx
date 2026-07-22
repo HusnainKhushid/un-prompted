@@ -93,7 +93,7 @@ export default function Hero() {
       <video
         aria-hidden
         ref={videoRef}
-        src="/assets/hero-loop-v2.mp4"
+        src="/assets/hero-loop-v2-crf23.mp4"
         autoPlay
         loop
         muted
