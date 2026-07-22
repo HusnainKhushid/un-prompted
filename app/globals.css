@@ -854,35 +854,58 @@ select:focus,
   position: absolute;
   left: clamp(20px, 4vw, 56px);
   top: 47%;
-  height: 40px;
-  transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
+  transform: translateY(-50%);
+  height: 280px; /* 7 × LINE_H — all boot lines visible */
+  transition: opacity 1000ms var(--ease-in-out);
 }
 .intro-lines.is-out {
   opacity: 0;
 }
+
+
 .intro-lines-track {
   position: relative;
   transition: transform 460ms var(--ease-out);
   will-change: transform;
 }
 .intro-line {
-  display: flex;
-  align-items: center;
   margin: 0;
   font-family: var(--font-martian);
   font-weight: 500;
   font-size: 12.8px;
-  line-height: 12.8px;
+  line-height: 40px;
   letter-spacing: 0;
   color: #fff;
   padding: 0 8px;
   width: fit-content;
   white-space: nowrap;
-  transition: opacity 460ms var(--ease-out), color 260ms var(--ease-out);
 }
-.intro-line.is-current {
-  background: #fff;
+.intro-line-dark {
   color: #000;
+}
+
+/* Fixed white bar — stays at Y=124px (centered inside the 120-160px active slot) */
+.intro-highlight-bar {
+  position: absolute;
+  top: 124px;
+  left: 0;
+  height: 32px;
+  background: #fff;
+  pointer-events: none;
+  z-index: 10;
+  transition: width 280ms var(--ease-out);
+}
+
+/* Clip container for black text — exact same position/size as bar */
+.intro-bar-clip {
+  position: absolute;
+  top: 124px;
+  left: 0;
+  height: 32px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 11;
+  transition: width 280ms var(--ease-out);
 }
 
 /* Status — mid right */
@@ -897,7 +920,7 @@ select:focus,
   letter-spacing: 0.12em;
   line-height: 1.55;
   color: #fff;
-  transition: opacity 460ms var(--ease-out), transform 460ms var(--ease-out);
+  transition: opacity 1000ms var(--ease-in-out), transform 1000ms var(--ease-in-out);
 }
 .intro-status.is-out {
   opacity: 0;
@@ -923,7 +946,7 @@ select:focus,
 }
 .intro-counter.is-morphing {
   position: absolute;
-  animation: counterMorphOut 520ms var(--ease-out) forwards;
+  animation: counterMorphOut 1000ms var(--ease-in-out) forwards;
 }
 @keyframes counterMorphOut {
   from { opacity: 1; transform: scale(1); }
@@ -937,7 +960,7 @@ select:focus,
   align-items: center;
   gap: 18px;
   pointer-events: auto;
-  animation: gateMorphIn 560ms var(--ease-out) 120ms both;
+  animation: gateMorphIn 1000ms var(--ease-in-out) 120ms both;
 }
 @keyframes gateMorphIn {
   from { opacity: 0; transform: scale(0.7); filter: blur(2px); }

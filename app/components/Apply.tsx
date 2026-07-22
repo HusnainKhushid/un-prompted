@@ -63,7 +63,7 @@ export default function Apply() {
         <Reveal className="w-full lg:w-[443px] shrink-0 flex flex-col" style={{ gap: 32 }}>
           <Eyebrow num="07" label="Apply" />
           <SectionHeading color="#ffffff" width={388}>
-            Attendance is limited. Submit your application.
+            Attendance is limited.
           </SectionHeading>
           <p style={{ fontFamily: MARTIAN, fontSize: 16, lineHeight: "22px", color: "#9d9d9d", margin: 0 }}>
             We&apos;ll review every submission.

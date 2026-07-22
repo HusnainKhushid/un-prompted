@@ -54,7 +54,7 @@ export default function Partners() {
         <Reveal className="w-full lg:w-[443px] shrink-0 flex flex-col" style={{ gap: 32 }}>
           <Eyebrow num="05" label="Our Partners" />
           <SectionHeading color="#ffffff" width={383}>
-            Co-Developed With Leading Products & Brands
+            Partnering with Leading Products & Brands
           </SectionHeading>
         </Reveal>
 

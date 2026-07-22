@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const BOOT_LINES = [
   "// VERIFYING INVITATION...",
@@ -15,9 +15,9 @@ const N = BOOT_LINES.length;
 
 const LINE_H = 40;
 const SCRUB_DISTANCE = 2600;
-const LOAD_DURATION = 3400; // ms for the loader to fill
-const GRANTED_BEAT = 240; // pause after 100% before "ACCESS GRANTED" lands
-const GRANTED_HOLD = 2000; // how long that state is held before fading out
+const LOAD_DURATION = 2500; // ms for the loader to fill
+const GRANTED_BEAT = 0; // pause after 100% before "ACCESS GRANTED" lands
+const GRANTED_HOLD = 500; // how long that state is held before fading out
 
 /** "granted" holds the finished ACCESS GRANTED state; "enter" fades it out and
  *  brings up the audio gate. */
@@ -25,9 +25,12 @@ type Phase = "loading" | "granted" | "enter" | "scrub" | "reveal" | "held";
 type Variant = "depth" | "simple";
 
 function lineOpacity(d: number): number {
-  // All lines stay fully white; only the bar background changes the active one.
-  if (d === 0) return 1;
-  return 1;
+  const abs = Math.abs(d);
+  if (abs === 0) return 1;
+  if (abs === 1) return 1;
+  if (abs === 2) return 0.5;
+  if (abs === 3) return 0.1;
+  return 0;
 }
 
 export default function IntroSequence({
@@ -41,14 +44,16 @@ export default function IntroSequence({
   const [active, setActive] = useState(0);
   const [percent, setPercent] = useState(0);
   const [scrolled, setScrolled] = useState(false);
+  const [barWidth, setBarWidth] = useState(0);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const activeLineRef = useRef<HTMLParagraphElement | null>(null);
   const videoReady = useRef(false);
   const progress = useRef(0);
   const phaseRef = useRef<Phase>("loading");
   phaseRef.current = phase;
 
-  const videoSrc = variant === "simple" ? "/assets/intro-animation-v3-scrub.mp4" : "/assets/hero-v3.mp4";
+  const videoSrc = variant === "simple" ? "/assets/intro-simple.mp4" : "/assets/intro-reveal.mp4";
 
   // Reduced motion → skip to reveal / final frame.
   useEffect(() => {
@@ -116,6 +121,13 @@ export default function IntroSequence({
     }, 150);
     return () => clearInterval(id);
   }, [phase]);
+
+  // Measure active line width synchronously before paint so bar has correct size from frame 1.
+  useLayoutEffect(() => {
+    if (activeLineRef.current) {
+      setBarWidth(activeLineRef.current.offsetWidth);
+    }
+  }, [active]);
 
   const startScrub = useCallback((withAudio: boolean) => {
     const v = videoRef.current;
@@ -240,19 +252,31 @@ export default function IntroSequence({
         <div className="intro-overlay">
           {/* Boot log conveyor through the fixed highlight bar */}
           <div className={`intro-lines ${leaving ? "is-out" : ""}`}>
-            <div className="intro-lines-track" style={{ transform: `translateY(${-active * LINE_H}px)` }}>
-              {BOOT_LINES.map((line, i) => {
-                const d = i - active;
-                return (
-                  <p
-                    key={line}
-                    className={`intro-line ${d === 0 ? "is-current" : ""}`}
-                    style={{ height: LINE_H, opacity: lineOpacity(d) }}
-                  >
+            <div className="intro-lines-track" style={{ transform: `translateY(${(3 - active) * LINE_H}px)` }}>
+              {BOOT_LINES.map((line, i) => (
+                <p
+                  key={line}
+                  ref={i === active ? activeLineRef : null}
+                  className="intro-line"
+                  style={{ height: LINE_H, opacity: lineOpacity(i - active) }}
+                >
+                  {line}
+                </p>
+              ))}
+            </div>
+
+            {/* Fixed white bar — stays at Y=120px (center of 280px container) */}
+            <div className="intro-highlight-bar" style={{ width: barWidth }} />
+
+            {/* Clipped black-text track — same lines in #000, clipped to bar zone */}
+            <div className="intro-bar-clip" style={{ width: barWidth }}>
+              <div style={{ transform: `translateY(${-active * LINE_H - 4}px)`, transition: `transform 460ms var(--ease-out)`, willChange: "transform" }}>
+                {BOOT_LINES.map((line) => (
+                  <p key={`dark-${line}`} className="intro-line intro-line-dark" style={{ height: LINE_H }}>
                     {line}
                   </p>
-                );
-              })}
+                ))}
+              </div>
             </div>
           </div>
 

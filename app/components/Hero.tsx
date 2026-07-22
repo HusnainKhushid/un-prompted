@@ -78,7 +78,7 @@ export default function Hero() {
     if (!v) return;
     v.muted = !on;
     v.volume = on ? 1 : 0;
-    if (on) void v.play().catch(() => {});
+    if (on) void v.play().catch(() => { });
   }, [on]);
 
   return (
@@ -93,7 +93,7 @@ export default function Hero() {
       <video
         aria-hidden
         ref={videoRef}
-        src="/assets/hero-loop-v2-crf23.mp4"
+        src="/assets/hero-loop.mp4"
         autoPlay
         loop
         muted
@@ -149,7 +149,7 @@ export default function Hero() {
               className="uppercase"
               style={{ fontFamily: MARTIAN, fontWeight: 500, fontSize: "clamp(16px, 2vw, 28px)", letterSpacing: "-0.08em", lineHeight: 1, color: "rgba(255,255,255,0.65)" }}
             >
-              by
+              PRESENTED BY
             </span>
             <CraftLogo width={150} />
           </div>

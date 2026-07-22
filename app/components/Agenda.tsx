@@ -22,7 +22,7 @@ export default function Agenda() {
         <Reveal className="w-full lg:w-[443px] shrink-0">
           <div className="sticky-col flex flex-col" style={{ gap: 32 }}>
             <Eyebrow num="06" label="Event Schedule" />
-            <SectionHeading color="#ffffff">Intentionally Designed for Marketing & Growth in the Age of AI</SectionHeading>
+            <SectionHeading color="#ffffff">Designed for Marketing & Growth in the Age of AI</SectionHeading>
           </div>
         </Reveal>
 

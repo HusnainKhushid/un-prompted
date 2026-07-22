@@ -68,7 +68,10 @@ export default function Speakers() {
       <div className="flex flex-col" style={{ gap: 64 }}>
         <Reveal className="flex flex-col" style={{ gap: 24 }}>
           <Eyebrow num="04" label="Featured Speakers" />
-          <SectionHeading width={719}>World-Class AI Founders, Builders, Executives & Operators</SectionHeading>
+          <SectionHeading width={719}>
+            World-Class Founders,<br />
+            Builders & Operators
+          </SectionHeading>
         </Reveal>
 
         <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 24 }}>
@@ -79,7 +82,7 @@ export default function Speakers() {
 
         <Reveal>
           <SectionHeading width={719} size={36}>
-            Many more being announced soon...
+            More coming soon...
           </SectionHeading>
         </Reveal>
       </div>
