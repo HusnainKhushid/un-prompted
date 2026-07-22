@@ -25,9 +25,9 @@ type Phase = "loading" | "granted" | "enter" | "scrub" | "reveal" | "held";
 type Variant = "depth" | "simple";
 
 function lineOpacity(d: number): number {
+  // All lines stay fully white; only the bar background changes the active one.
   if (d === 0) return 1;
-  if (d < 0) return Math.max(0, 0.42 + d * 0.2);
-  return Math.max(0, 0.55 - d * 0.2);
+  return 1;
 }
 
 export default function IntroSequence({

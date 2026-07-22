@@ -869,8 +869,11 @@ select:focus,
   display: flex;
   align-items: center;
   margin: 0;
-  font-size: clamp(11px, 1vw, 14px);
-  letter-spacing: 0.08em;
+  font-family: var(--font-martian);
+  font-weight: 500;
+  font-size: 12.8px;
+  line-height: 12.8px;
+  letter-spacing: 0;
   color: #fff;
   padding: 0 8px;
   width: fit-content;
